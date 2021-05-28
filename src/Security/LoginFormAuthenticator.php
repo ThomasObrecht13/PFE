@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +20,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Doctrine\Persistence\ManagerRegistry;
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
 {
@@ -30,13 +32,16 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     private $urlGenerator;
     private $csrfTokenManager;
     private $passwordEncoder;
+    private $registry;
 
-    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder,ManagerRegistry $registry)
     {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
+        $this->registry = $registry;
+
     }
 
     public function supports(Request $request)
@@ -90,14 +95,34 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
-    {
+    {/*
+        //On verifie si l'utilisateur isActive
+        $userRepository = new UserRepository($this->registry);
+        $user = $userRepository->findByUser($token->getUser()->getUsername())[0]['isActive'];
+
+        if (is_null($user) || $user == 0) {
+            return new RedirectResponse("/logout");
+        }
+        */
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
         }
 
-        // For example : return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        // redirect to some "app_homepage" route - of wherever you want
-        return new RedirectResponse($this->urlGenerator->generate('app_login'));
+        // Redirection si ADMIN
+        if($token->getUser()->getRoles() == ['ROLE_ADMIN','ROLE_USER']){
+            return new RedirectResponse($this->urlGenerator->generate('admin_creer_utilisateur'));
+        }
+        // Redirection si PROF
+        if($token->getUser()->getRoles() == ['ROLE_PROF','ROLE_USER']){
+            return new RedirectResponse($this->urlGenerator->generate('accueil'));
+        }
+        // Redirection si STUD
+        if($token->getUser()->getRoles() == ['ROLE_STUD','ROLE_USER']){
+            return new RedirectResponse($this->urlGenerator->generate('accueil'));
+        }
+
+        return new RedirectResponse($this->urlGenerator->generate('accueil'));
+
     }
 
     protected function getLoginUrl()

@@ -36,32 +36,50 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getSameEmail(String $email)
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb=$this->createQueryBuilder('u');
+        $qb->select('u')
+            ->where('u.email LIKE ?1')
+            ->setParameter(1,$email);
 
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        return $qb->getQuery()->getResult();
     }
-    */
+
+    public function getSameEmailOnChange(String $email, String $id)
+    {
+        $qb=$this->createQueryBuilder('u');
+        $qb->select('u')
+            ->where('u.email LIKE ?1')
+            ->andWhere('u.id NOT LIKE ?2')
+            ->setParameter(1,$email)
+            ->setParameter(2,$id);
+
+
+        return $qb->getQuery()->getResult();
+    }
+    public function findByUser(String $user)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u.isActive')
+            ->where('u.email = ?1')
+            ->setParameter(1,$user);
+        return $qb->getQuery()->getResult();
+    }
+    public function findToken(String $token)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u')
+            ->where('u.tokenMail = ?1')
+            ->setParameter(1, $token);
+        return $qb->getQuery()->getResult();
+    }
+    public function findByMail(String $mail)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u.id')
+            ->where('u.email = ?1')
+            ->setParameter(1,$mail);
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -18,21 +18,34 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}
+        <div class="container-fluid">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="#">Navbar</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
-                        <a class="nav-item nav-link" href="#">Features</a>
-                        <a class="nav-item nav-link" href="#">Pricing</a>
-                        <a class="nav-item nav-link disabled" href="#">Disabled</a>
+                    <a class="navbar-brand" href="#">Navbar</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <div class="navbar-nav">
+                            <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a class="nav-item nav-link" href="{{ path('admin_creer_utilisateur') }}">Ajouter un compte</a>
+                                <a class="nav-item nav-link" href="{{ path('admin_gestion_utilisateur') }}">Gérer les comptes</a>
+                            {% endif %}
+                            <a class="nav-item nav-link" href="{{ path('user_profil') }}">Profil</a>
+
+                            <a class="nav-item nav-link disabled" href="{{ path('app_logout') }}">logout</a>
+
+                        </div>
                     </div>
-                </div>
-            </nav>
+                </nav>
+            </div>
+        {% for message in app.flashes('notice') %}
+            <div class="flash-notice">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% block body %}
+
         {% endblock %}
     </body>
 </html>

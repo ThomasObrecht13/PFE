@@ -1,0 +1,48 @@
+{% extends 'base.html.twig'%}
+{% block body %}
+    <div class="container-fluid">
+        <form method="post" action="{{ path('admin_edit_utilisateur_form') }}">
+            <legend>Modifier un compte</legend>
+
+            <div class="form-group">
+                <label>email :</label>
+                <input name="email"  type="text"  size="18" value="{{donnees.email|default('')}}" class="form-control">
+                {% if erreurs.email is defined %}
+                    <div style="color: red">{{ erreurs.email }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>role :</label>
+                <input type="radio" name="role" value="1" {% if donnees.roles == ['ROLE_PROF','ROLE_USER'] %} checked="true" {% endif %}><label for="role">professeur</label>
+                <input type="radio" name="role" value="2" {% if donnees.roles == ['ROLE_USER'] %} checked="true" {% endif %} ><label for="role">étudiant(e)</label>
+                {% if erreurs.role is defined %}
+                    <div style="color: red">{{ erreurs.role }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>nom :</label>
+                <input name="nom"  type="text"  size="18" value="{{donnees.nom|default('')}}" class="form-control">
+                {% if erreurs.nom is defined %}
+                    <div style="color: red">{{ erreurs.nom }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>prenom :</label>
+                <input name="prenom"  type="text"  size="18" value="{{donnees.prenom|default('')}}" class="form-control">
+                {% if erreurs.prenom is defined %}
+                    <div style="color: red">{{ erreurs.prenom }}</div>
+                {% endif %}
+            </div>
+
+            <input type="hidden" name="token" value="{{ csrf_token('form_user') }}">
+            <input type="text" name="id" value="{{donnees.id|default('')}}">
+
+            <button type="submit" class="btn btn-primary">{{ button|default('Valider') }}</button>
+            <input type="hidden" name="_method" value="PUT">
+
+        </form>
+    </div>
+{% endblock %}
