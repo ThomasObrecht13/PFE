@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>details projet</h1>
+    <table>
+        <tr>
+            <th>sujet</th><th>date_debut</th><th>etudiant</th><th>tuteur</th>
+        </tr>
+           <tr>
+               <th>{{ donnees.sujet }}</th>
+               <th>{{ donnees.date|date('d/m/Y') }}</th>
+               <th>etudiant</th>
+               <th>
+                   {% for tuteur in tuteurs %}
+                       {{ tuteur.email }}<br>
+                   {% endfor %}
+               </th>
+           </tr>
+    </table>
+{% endblock %}

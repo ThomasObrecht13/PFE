@@ -3,19 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
@@ -150,12 +141,12 @@ class AdminController extends AbstractController
         if(!$this->isCsrfTokenValid('user_delete', $request->get('token'))) {
             throw new  InvalidCsrfTokenException('Invalid CSRF token formulaire user');
         }
-        $entityManager = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         $id= $request->request->get('id');
-        $user = $entityManager->getRepository(User::class)->find($id);
+        $user = $em->getRepository(User::class)->find($id);
         if (!$user)  throw $this->createNotFoundException('No user found for id '.$id);
-        $entityManager->remove($user);
-        $entityManager->flush();
+        $em->remove($user);
+        $em->flush();
         return $this->redirectToRoute('admin_gestion_utilisateur');
     }
 

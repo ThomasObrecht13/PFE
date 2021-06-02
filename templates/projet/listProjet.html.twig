@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {% if projets %}
+    <h1>Mes projets</h1>
+    <table>
+    <tr>
+        <th>sujet</th><th>date début</th>{% if is_granted('ROLE_PROF') %}<th>option</th>{% endif %}
+    </tr>
+    {% for projet in projets %}
+        <tr>
+            <th>{{ projet.sujet }}</th>
+            <th>{{ projet.date|date('d/m/Y') }}</th>
+                <th>
+                    <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
+                    <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
+
+                </th>
+        </tr>
+    {% endfor %}
+    </table>
+    {% endif %}
+    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+        <a href="{{ path('add_projet') }}">add</a>
+    {% endif %}
+    <h1>Liste des projets</h1>
+    <table>
+        <tr>
+            <th>sujet</th><th>date début</th>{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}<th>option</th>{% endif %}
+        </tr>
+        {% for projet in donnees %}
+            <tr>
+                <th>{{ projet.sujet }}</th>
+                <th>{{ projet.date|date('d/m/Y') }}</th>
+                <th>
+                    <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
+                </th>
+                {% if is_granted('ROLE_ADMIN') %}
+                <th>
+                    <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
+                    <form action="{{ path('delete_projet') }}" method="POST" style="display:inline">
+                        <input type="hidden" name="token" value="{{ csrf_token('projet_delete') }}">
+                        <input type="hidden" name="id" value="{{ projet.id }}">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-warning">Supprimer</button>
+                    </form>
+                </th>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
