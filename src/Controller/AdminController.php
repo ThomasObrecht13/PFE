@@ -41,26 +41,28 @@ class AdminController extends AbstractController
         if ($request->getMethod() == 'GET') {
             return $this->render('admin/addAccount.html.twig');
         }
-
         if (!$this->isCsrfTokenValid('form_user', $request->get('token'))) {
             throw new  InvalidCsrfTokenException('Invalid CSRF token formulaire produit');
         }
 
+        //On récupère les données du formulaire
         $donnees['email'] = $request->request->get('email');
         $donnees['role'] = $request->request->get('role');
+        //On verifie les erreurs
         $erreurs = $this->validatorUser($donnees);
-
+        //Si il n'y a pas d'erreurs
         if (empty($erreurs)) {
-
+            /*
+             * On crée un User avec les données
+             */
             $user = new User();
-
             if($donnees['role']=='1'){
                 $user->setRoles(['ROLE_PROF']);
             }else{
                 $user->setRoles(['ROLE_USER']);
             }
 
-
+            //génération d'un mote de passe aléatoire
             $characters = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
             $password ='';
             for($i=0;$i<10;$i++)
@@ -76,8 +78,12 @@ class AdminController extends AbstractController
             $this->getDoctrine()->getManager()->persist($user);
             $this->getDoctrine()->getManager()->flush();
 
+            /*
+             * On envoie un mail pour changer de mot de passe
+             */
+            //On crée le lien contenu dans le mail
             $link = 'http://127.0.0.1:8000/resetpassword/'.$user->getTokenMail();
-
+            //On crée le mail
             $message = (new \Swift_Message('Nouveau contact'))
                 // On attribue l'expéditeur
                 ->setFrom('appli@appli.com')
@@ -92,14 +98,11 @@ class AdminController extends AbstractController
                     ),
                     'text/html'
                 );
+            //On envoie le mail
             $mailer->send($message);
-
-
-
             return $this->redirectToRoute('admin_creer_utilisateur');
         }
-
-
+        //si erreur, on revient sur le formulaire
         return $this->render('admin/addAccount.html.twig',['donnees'=>$donnees,'erreurs'=>$erreurs]);
     }
 

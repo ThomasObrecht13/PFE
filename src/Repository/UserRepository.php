@@ -93,4 +93,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter(1,$projet);
         return $qb->getQuery()->getResult();
     }
+
+    public function findStudByProjet(String $projet)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u.email')
+            ->join( 'App:MEMBRE', 'm')
+            ->where('u.id = m.User')
+            ->andWhere('m.Projet = ?1')
+            ->setParameter(1,$projet);
+        return $qb->getQuery()->getResult();
+    }
+
 }

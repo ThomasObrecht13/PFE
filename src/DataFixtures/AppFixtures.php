@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Membre;
 use App\Entity\Note;
 use App\Entity\Projet;
 use App\Entity\User;
@@ -28,6 +29,7 @@ class AppFixtures extends Fixture
         $this->loadUser($manager);
         $this->loadProjet($manager);
         $this->loadNote($manager);
+        $this->loadMembre($manager);
 
     }
 
@@ -36,10 +38,13 @@ class AppFixtures extends Fixture
         $users = [
             ['id' => 1, 'email' => 'admin@admin','pwd'=>'admin','role'=>(array)'ROLE_ADMIN'],
             ['id' => 2, 'email' => 'stud@stud','pwd'=>'stud','role'=>(array)'ROLE_USER'],
-            ['id' => 3, 'email' => 'prof@prof','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
-            ['id' => 4, 'email' => 'dupont@dupont','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
-            ['id' => 5, 'email' => 'dupuit@dupuit','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
-            ['id' => 6, 'email' => 'bernard@bernard','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
+            ['id' => 3, 'email' => 'michou@michou','pwd'=>'stud','role'=>(array)'ROLE_USER'],
+            ['id' => 4, 'email' => 'inox@inox','pwd'=>'stud','role'=>(array)'ROLE_USER'],
+            ['id' => 5, 'email' => 'luc@luc','pwd'=>'stud','role'=>(array)'ROLE_USER'],
+            ['id' => 6, 'email' => 'prof@prof','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
+            ['id' => 7, 'email' => 'dupont@dupont','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
+            ['id' => 8, 'email' => 'dupuit@dupuit','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
+            ['id' => 9, 'email' => 'bernard@bernard','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
         ];
         foreach ($users as $user) {
             $new_user = new User();
@@ -97,6 +102,27 @@ class AppFixtures extends Fixture
             $manager->persist($new_note);
             $manager->flush();
 
+        }
+    }
+    public function loadMembre(ObjectManager $manager)
+    {
+        $membres = [
+            ['id' => 1, 'chefProjet' => false, 'projet' => 'Appli web', 'user' => 'michou@michou'],
+            ['id' => 2, 'chefProjet' => false, 'projet' => 'Appli web', 'user' => 'inox@inox'],
+
+
+        ];
+        foreach ($membres as $membre) {
+            $new_membre = new Membre();
+            $projet = $manager->getRepository(Projet::class)->findOneBy(["sujet"  =>  $membre['projet']]);
+            $user = $manager->getRepository(User::class)->findOneBy(["email"  =>  $membre['user']]);
+
+            $new_membre->setChefProjet($membre['chefProjet'])
+                ->setProjet($projet)
+                ->setUser($user);
+
+            $manager->persist($new_membre);
+            $manager->flush();
         }
     }
 }

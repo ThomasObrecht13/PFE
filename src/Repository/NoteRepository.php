@@ -47,4 +47,45 @@ class NoteRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function findNoteByTuteur(String $projet,String $user)
+    {
+        $qb = $this->createQueryBuilder('n');
+        $qb->select('n.id')
+            ->where('n.Projet = ?1')
+            ->andWhere('n.User = ?2')
+            ->setParameter(1,$projet)
+            ->setParameter(2,$user);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findNoteByProjet(String $projet)
+    {
+        $qb = $this->createQueryBuilder('n');
+        $qb->select('n.id')
+            ->where('n.Projet = ?1')
+            ->setParameter(1,$projet);
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findNoteMoyenneByProjet(String $projet)
+    {
+        $qb = $this->createQueryBuilder('n');
+        $qb->select('AVG(n.soutenance) as soutenance, AVG(n.rapport) as rapport, AVG(n.technique) as technique')
+            ->where('n.Projet = ?1')
+            ->setParameter(1,$projet);
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findNoteByUserAndProject(String $projet, String $user)
+    {
+        $qb = $this->createQueryBuilder('n');
+        $qb->select('n.id, n.soutenance, n.rapport, n.technique')
+            ->where('n.Projet = ?1')
+            ->andWhere('n.User = ?2')
+            ->setParameter(1,$projet)
+            ->setParameter(2,$user);
+
+        return $qb->getQuery()->getResult();
+    }
 }

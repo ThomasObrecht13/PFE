@@ -1,19 +1,56 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h1>details projet</h1>
+    <h1>Details projet</h1>
     <table>
         <tr>
-            <th>sujet</th><th>date_debut</th><th>etudiant</th><th>tuteur</th>
+            <th>sujet</th><th>date_debut</th><th>etudiant</th><th>tuteur</th><th>soutenance</th><th>rapport</th><th>technique</th>
         </tr>
            <tr>
                <th>{{ donnees.sujet }}</th>
                <th>{{ donnees.date|date('d/m/Y') }}</th>
-               <th>etudiant</th>
+               <th>
+                   {% for etudiant in etudiants %}
+                       {{ etudiant.email }}<br>
+                   {% endfor %}
                <th>
                    {% for tuteur in tuteurs %}
                        {{ tuteur.email }}<br>
                    {% endfor %}
                </th>
+               <th>{{ notes.0.soutenance }}</th>
+               <th>{{ notes.0.rapport }}</th>
+               <th>{{ notes.0.technique }}</th>
+
+
            </tr>
     </table>
+    {% if isTuteur %}
+    <form action="{{ path('add_tuteur') }}" method="POST" style="display:inline">
+        <input type="hidden" name="id" value="{{ donnees.id }}">
+        <button type="submit" class="btn btn-primary">Devenir tuteur</button>
+    </form>
+    {% else %}
+        <h1>Note</h1>
+        <table>
+            <tr>
+                <th>soutenance</th><th>rapport</th><th>technique</th><th></th>
+            </tr>
+            <tr>
+                <form action="{{ path('edit_note') }}" method="POST" style="display:inline">
+                    {# note est un tableau #}
+                    <th><input type="text" name="soutenance" value="{{ notePerso.0.soutenance }}"></th>
+                    <th><input type="text" name="rapport" value="{{ notePerso.0.rapport }}"></th>
+                    <th><input type="text" name="technique" value="{{ notePerso.0.technique }}"></th>
+
+                    <th>
+                        <input type="hidden" name="note" value="{{ notePerso.0.id }}">
+                        <input type="hidden" name="projet" value="{{ donnees.id }}">
+
+                        <button type="submit" class="btn btn-primary">Valider</button>
+                    </th>
+                </form>
+            </tr>
+        </table>
+    {% endif %}
+
 {% endblock %}

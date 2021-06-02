@@ -34,9 +34,15 @@ class Projet
      */
     private $notes;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Membre::class, mappedBy="Projet")
+     */
+    private $membres;
+
     public function __construct()
     {
         $this->notes = new ArrayCollection();
+        $this->membres = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,6 +98,36 @@ class Projet
             // set the owning side to null (unless already changed)
             if ($note->getProjet() === $this) {
                 $note->setProjet(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Membre[]
+     */
+    public function getMembres(): Collection
+    {
+        return $this->membres;
+    }
+
+    public function addMembre(Membre $membre): self
+    {
+        if (!$this->membres->contains($membre)) {
+            $this->membres[] = $membre;
+            $membre->setProjet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMembre(Membre $membre): self
+    {
+        if ($this->membres->removeElement($membre)) {
+            // set the owning side to null (unless already changed)
+            if ($membre->getProjet() === $this) {
+                $membre->setProjet(null);
             }
         }
 

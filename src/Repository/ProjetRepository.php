@@ -48,7 +48,7 @@ class ProjetRepository extends ServiceEntityRepository
     }
     */
 
-    public function findProjets(String $user)
+    public function findProjetsForProf(String $user)
     {
         $qb = $this->createQueryBuilder('p');
         $qb->select('p.id, p.sujet, p.date')
@@ -59,4 +59,14 @@ class ProjetRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findProjetsForStud(String $user)
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p.id, p.sujet, p.date')
+            ->join( 'App:MEMBRE', 'm')
+            ->where('p.id = m.Projet')
+            ->andWhere('m.User = ?1')
+            ->setParameter(1,$user);
+        return $qb->getQuery()->getResult();
+    }
 }

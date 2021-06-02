@@ -41,22 +41,24 @@ class UserController extends AbstractController
     public function editProfil(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        //on récupere l'User login
         $user = $this->getUser();
 
         if (!$this->isCsrfTokenValid('form_profil', $request->get('token'))) {
             throw new InvalidCsrfTokenException('Invalid CSRF token formulaire user');
         }
-
+        //on récupere les donnees transmis par le formulaire
         $donnees['nom'] = $request->request->get('nom');
         $donnees['prenom'] = $request->request->get('prenom');
         $donnees['email'] = $request->request->get('email');
 
         $donnees['id'] = $this->getUser()->getId();
 
+        //on verifie les erreurs
         $erreurs = $this->validatorEditProfil($donnees);
-
+        //si  il n'y a pas d'erreurs
         if (empty($erreurs)) {
-
+            //on crée un User
             $user->setEmail($donnees['email']);
             $user->setNom($donnees['nom']);
             $user->setPrenom($donnees['prenom']);
@@ -65,6 +67,7 @@ class UserController extends AbstractController
             $em->flush();
             return $this->redirectToRoute('user_profil');
         }
+        //Redirection faire le formulaire avec l'affichage des erreurs
         return $this->render('user/editUser.html.twig', ['donnees' => $user, 'erreurs' => $erreurs]);
     }
 
@@ -92,20 +95,28 @@ class UserController extends AbstractController
         if ($request->getMethod() == 'GET') {
             return $this->render('user/emailResetPassword.html.twig');
         }
+        //on récupere les donnees transmis par le formulaire
         $donnees['email'] = $request->request->get('email');
+        //on verifie les erreurs
         $erreurs = $this->validatorEmail($donnees);
-
+        //si  il n'y a pas d'erreurs
         if (empty($erreurs)) {
+            /*
+             * On envoie un mail
+             */
+            //on recupere l'id de l'User grace au mail
             $id = $userRepository->findByMail($donnees['email'])[0]['id'];
-
+            //on recupere l'User grace à l'ID
             $user = $this->getDoctrine()->getRepository(User::class)->find($id);
-
+            //On génére un tokenMail
             $user->setTokenMail($this->token->generateToken());
             $this->getDoctrine()->getManager()->persist($user);
             $this->getDoctrine()->getManager()->flush();
 
+            //On crée le lien contenu dans le mail
             $link = 'http://127.0.0.1:8000/resetpassword/' . $user->getTokenMail();
 
+            //On crée le mail
             $message = (new \Swift_Message('Nouveau contact'))
                 // On attribue l'expéditeur
                 ->setFrom('appli@appli.com')
@@ -120,7 +131,9 @@ class UserController extends AbstractController
                     ),
                     'text/html'
                 );
+            //on envoie le mail
             $mailer->send($message);
+            //on ajoute un message flash à la vue pour dire que le mail est bien envoyé
             $this->addFlash('notice', 'email envoyé');
             return $this->redirectToRoute('accueil');
         }
