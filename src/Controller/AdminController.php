@@ -50,6 +50,7 @@ class AdminController extends AbstractController
         $donnees['role'] = $request->request->get('role');
         //On verifie les erreurs
         $erreurs = $this->validatorUser($donnees);
+
         //Si il n'y a pas d'erreurs
         if (empty($erreurs)) {
             /*
@@ -117,7 +118,10 @@ class AdminController extends AbstractController
             $erreurs['email']='Veuillez indiquer une addresse';
 
         if(empty($donnees['role']))
-            $erreurs['role']='Veuillez sélectionner un role';
+            $erreurs['role']='Veuillez sélectionner un rôle';
+
+        if($donnees['role']!=1 and $donnees['role']!=2)
+            $erreurs['role']='Veuillez sélectionner un rôle';
 
 
         return $erreurs;
@@ -202,7 +206,8 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('admin_gestion_utilisateur');
         }
 
-        $user = $em->getRepository(User::class)->findOneBy(['email'=>$id]);
+        $user = $em->getRepository(User::class)->findOneBy(['id'=>$id]);
+
         return $this->render('/admin/editUser.html.twig', ['donnees' => $user, 'erreurs'=>$erreurs]);
     }
 
@@ -214,6 +219,12 @@ class AdminController extends AbstractController
 
         if(empty($donnees['email']))
             $erreurs['email']='Veuillez indiquer une addresse';
+
+        if(empty($donnees['role']))
+            $erreurs['role']='Veuillez sélectionner un rôle';
+
+        if($donnees['role']!=1 and $donnees['role']!=2)
+            $erreurs['role']='Veuillez sélectionner un rôle';
 
         return $erreurs;
     }

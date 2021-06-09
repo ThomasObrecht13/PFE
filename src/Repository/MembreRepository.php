@@ -47,12 +47,23 @@ class MembreRepository extends ServiceEntityRepository
         ;
     }
     */
-    public function findMembre(String $projet)
+    public function findMembreByProjet(String $projet)
     {
         $qb = $this->createQueryBuilder('m');
-        $qb->select('m.id')
+        $qb->select('m')
             ->where('m.Projet = ?1')
             ->setParameter(1,$projet);
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findMembreByProjetAndUser(String $projet,String $user)
+    {
+        $qb = $this->createQueryBuilder('m');
+        $qb->select('m')
+            ->where('m.Projet = ?1')
+            ->andWhere('m.User = ?2')
+            ->setParameter(1,$projet)
+            ->setParameter(2,$user);
         return $qb->getQuery()->getResult();
     }
 }

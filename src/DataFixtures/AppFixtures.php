@@ -62,9 +62,9 @@ class AppFixtures extends Fixture
     public function loadProjet(ObjectManager $manager)
     {
         $projets = [
-            ['id' => 1, 'sujet' => 'Appli web', 'date' => '2021-06-01'],
-            ['id' => 2, 'sujet' => 'Gestion BDD', 'date' => '2021-07-03'],
-            ['id' => 3, 'sujet' => 'LEPROJETLA', 'date' => '2021-07-03'],
+            ['id' => 1, 'sujet' => 'Appli web', 'description' => 'Developpement d\'une application web permettant la gestion de projet tuteuré', 'date' => '2021-06-01'],
+            ['id' => 2, 'sujet' => 'Gestion BDD', 'description' => 'Gérer la base de données d\'une entreprise', 'date' => '2021-07-03'],
+            ['id' => 3, 'sujet' => 'LEPROJETLA', 'description' => 'LEPROJETLA', 'date' => '2021-07-03'],
 
         ];
 
@@ -72,6 +72,7 @@ class AppFixtures extends Fixture
             $new_projet = new Projet();
 
             $new_projet->setSujet($projet['sujet'])
+                ->setDescription($projet['description'])
                 ->setDate(DateTime::createFromFormat('Y-m-d',$projet['date']));
 
             $manager->persist($new_projet);
@@ -107,10 +108,8 @@ class AppFixtures extends Fixture
     public function loadMembre(ObjectManager $manager)
     {
         $membres = [
-            ['id' => 1, 'chefProjet' => false, 'projet' => 'Appli web', 'user' => 'michou@michou'],
+            ['id' => 1, 'chefProjet' => true, 'projet' => 'Appli web', 'user' => 'michou@michou'],
             ['id' => 2, 'chefProjet' => false, 'projet' => 'Appli web', 'user' => 'inox@inox'],
-
-
         ];
         foreach ($membres as $membre) {
             $new_membre = new Membre();

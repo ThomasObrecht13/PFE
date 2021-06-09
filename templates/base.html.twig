@@ -7,6 +7,8 @@
            and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}
             {#{{ encore_entry_link_tags('app') }}#}
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         {% endblock %}
 
@@ -18,28 +20,47 @@
         {% endblock %}
     </head>
     <body>
-        <div class="container-fluid">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                    <a class="navbar-brand" href="#">Navbar</a>
+            <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+                    <a class="navbar-brand" href="{{ path('accueil') }}">App</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                        <div class="navbar-nav">
-                            <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <a class="nav-item nav-link" href="{{ path('admin_creer_utilisateur') }}">Ajouter un compte</a>
-                                <a class="nav-item nav-link" href="{{ path('admin_gestion_utilisateur') }}">Gérer les comptes</a>
-                            {% endif %}
-                            <a class="nav-item nav-link" href="{{ path('user_profil') }}">Profil</a>
-                            <a class="nav-item nav-link " href="{{ path('list_projet') }}">Projet</a>
 
-                            <a class="nav-item nav-link disabled" href="{{ path('app_logout') }}">logout</a>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <div class="navbar-nav mr-auto">
+                            {% if is_granted('ROLE_ADMIN') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('admin_creer_utilisateur') }}">Ajouter un compte</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('admin_gestion_utilisateur') }}">Gérer les comptes</a>
+                            </li>
+                            {% endif %}
+
+                            <li class="nav-item">
+                                <a class="nav-link " href="{{ path('mes_projets') }}">Mes projets</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " href="{{ path('list_projet') }}">Autres projets</a>
+                            </li>
 
                         </div>
+                        <div class="nav-item dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Compte
+                            </button>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ path('user_profil') }}">Profil</a>
+
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
+                            </div>
+                        </div>
                     </div>
-                </nav>
-            </div>
+
+            </nav>
         {% for message in app.flashes('notice') %}
             <div class="flash-notice">
                 {{ message }}

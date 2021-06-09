@@ -65,7 +65,7 @@ class UserController extends AbstractController
 
             $em->persist($user);
             $em->flush();
-            return $this->redirectToRoute('user_profil');
+            return $this->redirectToRoute('accueil');
         }
         //Redirection faire le formulaire avec l'affichage des erreurs
         return $this->render('user/editUser.html.twig', ['donnees' => $user, 'erreurs' => $erreurs]);

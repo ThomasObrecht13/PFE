@@ -77,10 +77,10 @@ class NoteRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findNoteByUserAndProject(String $projet, String $user)
+    public function findNoteByProjetAndUser(String $projet, String $user)
     {
         $qb = $this->createQueryBuilder('n');
-        $qb->select('n.id, n.soutenance, n.rapport, n.technique')
+        $qb->select('n')
             ->where('n.Projet = ?1')
             ->andWhere('n.User = ?2')
             ->setParameter(1,$projet)

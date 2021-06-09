@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container-fluid">
+    {% if projets %}
+        <h1>Mes projets</h1>
+        <table class="table table-striped ">
+            <thead>
+            <tr>
+                <th scope="col">Sujet</th>
+                <th scope="col">Description</th>
+                <th scope="col">Date début</th>
+                {% if is_granted('ROLE_PROF') %}
+                    <th scope="col">Option</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <body>
+            {% for projet in projets %}
+                <tr>
+                    <td>{{ projet.sujet }}</td>
+                    <td>{{ projet.description }}</td>
+                    <td>{{ projet.date|date('d/m/Y') }}</td>
+                    <td>
+                        <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
+                        <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
+
+                    </td>
+                </tr>
+            {% endfor %}
+            </body>
+        </table>
+    {% else %}
+        Vous n'avez aucun projet
+    {% endif %}
+
+    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+        <button type="button" class="btn btn-outline-primary"><a href="{{ path('add_projet') }}">Nouveau projet</a></button>
+    {% endif %}
+    </div>
+{% endblock %}

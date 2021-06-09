@@ -86,7 +86,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findProfByProjet(String $projet)
     {
         $qb = $this->createQueryBuilder('u');
-        $qb->select('u.email')
+        $qb->select('u')
             ->join( 'App:NOTE', 'n')
             ->where('u.id = n.User')
             ->andWhere('n.Projet = ?1')
@@ -97,11 +97,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findStudByProjet(String $projet)
     {
         $qb = $this->createQueryBuilder('u');
-        $qb->select('u.email')
+        $qb->select('u')
             ->join( 'App:MEMBRE', 'm')
             ->where('u.id = m.User')
             ->andWhere('m.Projet = ?1')
             ->setParameter(1,$projet);
+        return $qb->getQuery()->getResult();
+    }
+    public function findStudByNotProjet($role)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u')
+            ->where('u.roles LIKE ?1')
+            ->setParameter(1,'ROLE_%"' . $role . '"%');
         return $qb->getQuery()->getResult();
     }
 
