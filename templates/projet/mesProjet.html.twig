@@ -9,9 +9,7 @@
                 <th scope="col">Sujet</th>
                 <th scope="col">Description</th>
                 <th scope="col">Date début</th>
-                {% if is_granted('ROLE_PROF') %}
-                    <th scope="col">Option</th>
-                {% endif %}
+                <th scope="col">Option</th>
             </tr>
             </thead>
             <body>
@@ -22,7 +20,7 @@
                     <td>{{ projet.date|date('d/m/Y') }}</td>
                     <td>
                         <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
-                        <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
+                        <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details/gestion</a>
 
                     </td>
                 </tr>

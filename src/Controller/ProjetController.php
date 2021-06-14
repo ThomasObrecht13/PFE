@@ -110,7 +110,7 @@ class ProjetController extends AbstractController
             $em->persist($projet);
             $em->flush();
 
-            return $this->redirectToRoute('list_projet');
+            return $this->redirectToRoute('mes_projets');
         }
         return $this->render('projet/projetForm.html.twig', [
             'form_projet' => $form->createView(),
@@ -142,7 +142,7 @@ class ProjetController extends AbstractController
         }
 
         //On recupère l'ID des notes liées au projet
-        $idNotes = $em->getRepository(Note::class)->findNoteByProjet($id);
+        $idNotes = $em->getRepository(Note::class)->findNoteByProjet($idProjet);
         foreach ($idNotes as $idNote){
             $note = $em->getRepository(Note::class)->find($idNote);
             $em->remove($note);
@@ -153,7 +153,7 @@ class ProjetController extends AbstractController
         return $this->redirectToRoute('list_projet');
     }
     /* ---------------------------------
-            Details / Tuteur / Membre
+            Details
     --------------------------------- */
     /**
      * @Route("/projet/details/{id}", name="details_projet")
@@ -165,12 +165,18 @@ class ProjetController extends AbstractController
         $idProjet = $request->get('id');
         $donnees = $this->getDetailsProjet($idProjet);
 
+        if($donnees['access'] == false){
+            $this->addFlash('danger',"Vous n'avez pas accés à ce projet");
+            return $this->redirectToRoute('list_projet');
+        }
+
         return $this->render('projet/detailsProjet.html.twig',['projet'=>$donnees['projet'], 'tuteurs'=>$donnees['prof'], 'isTuteur'=>$donnees['isTuteur'],
-            'etudiants'=>$donnees['stud'], 'notePerso'=>$donnees['notePerso'], 'notes'=>$donnees['notes'], 'allStud'=>$donnees['allStud']]);
+            'etudiants'=>$donnees['stud'], 'notePerso'=>$donnees['notePerso'], 'notes'=>$donnees['notes'], 'allStud'=>$donnees['allStud'], 'allProf'=>$donnees['allProf']]);
 
     }
 
     public function getDetailsProjet($idProjet){
+        $details['access'] = true;
         //On recupère l'iD de l'utilisateur login
         $idUser = $this->getUser()->getId();
 
@@ -178,14 +184,28 @@ class ProjetController extends AbstractController
         //On verifie que le projet existe
         if (!$details['projet'])  throw $this->createNotFoundException('No projet found for id '.$idProjet);
 
+        //On cherche tous les étudiants liés au projet
+        $details['stud'] = $this->getDoctrine()->getRepository(User::class)->findStudByProjet($idProjet);
+
+        /* On vérifie que l'Utilisateur a le droit de consulter les details du projet
+             Droit d'accées: Utilisateur Etudiant - Membre
+                             Utilisateur Professeur
+                             Utilisateur Admin
+         */
+        $user = $this->getDoctrine()->getRepository(User::class)->find($idUser);
+        if($user->getRoles() == ["ROLE_USER"]){
+            if (array_search($user, $details['stud']) === false) {
+                $details['access'] = false;
+
+            }
+        }
+
         //On cherche tous les tuteurs liés au projet
         $details['isTuteur'] = empty($this->getDoctrine()->getRepository(Note::class)->findNoteByTuteur($idProjet,$idUser));
 
         //On cherche tous les professeurs liés au projet
         $details['prof'] = $this->getDoctrine()->getRepository(User::class)->findProfByProjet($idProjet);
 
-        //On cherche tous les étudiants liés au projet
-        $details['stud'] = $this->getDoctrine()->getRepository(User::class)->findStudByProjet($idProjet);
 
         //On cherche les notes mis par l'enseignant sur le projet
         $details['notePerso'] = $this->getDoctrine()->getRepository(Note::class)->findNoteByProjetAndUser($idProjet,$idUser);
@@ -193,7 +213,7 @@ class ProjetController extends AbstractController
         //On cherche la moyenne de toutes les notes
         $details['notes'] = $this->getDoctrine()->getRepository(Note::class)->findNoteMoyenneByProjet($idProjet);
 
-        /*trouver les étudiant qui ne sont pas liées à un projet*/
+        /*trouver les étudiant qui ne sont pas liées au projet*/
         $details['allStud'] = $this->getDoctrine()->getRepository(User::class)->findAll();
         foreach ($details['allStud'] as $user) {
             //si un user n'est pas un stud ou si il est déjà associer au projet
@@ -203,10 +223,21 @@ class ProjetController extends AbstractController
                 }
             }
         }
-
+        /*trouver les tuteurs qui ne sont pas liées au projet*/
+        $details['allProf'] = $this->getDoctrine()->getRepository(User::class)->findAll();
+        foreach ($details['allProf'] as $user) {
+            //si un user n'est pas un stud ou si il est déjà associer au projet
+            if($user->getRoles() != ["ROLE_PROF","ROLE_USER"] or in_array($user,$details['prof'])){
+                if (($key = array_search($user, $details['allProf'])) !== false) {
+                    unset($details['allProf'][$key]);
+                }
+            }
+        }
         return $details;
     }
-
+    /* ---------------------------------
+                TUTEUR
+    --------------------------------- */
     /**
      * @Route("/projet/addTuteur", name="add_tuteur")
      * @param Request $request
@@ -222,6 +253,33 @@ class ProjetController extends AbstractController
         if (!$projet)  throw $this->createNotFoundException('No projet found for id '.$idProjet);
         //On récupere l'User
         $user = $this->getUser();
+        //Création d'une Note
+        $note = new Note();
+        $note->setProjet($projet)
+            ->setUser($user);
+
+        $em->persist($note);
+        $em->flush();
+
+        return $this->redirectToRoute('details_projet',['id'=>$idProjet]);
+    }
+    /**
+     * @Route("/projet/addTuteur/{id}", name="add_tuteur_id")
+     * @param Request $request
+     * @param $id
+     */
+    public function addTuteurById(Request $request,$id = null)
+    {
+        //L'ajout d'un tuteur revient a créé une entité note qui lie le projet et l'User
+        $em = $this->getDoctrine()->getManager();
+        $idProjet = $request->get('idProjet');
+        $idUser = $request->get('idUser');
+
+        $projet = $this->getDoctrine()->getRepository(Projet::class)->find($idProjet);
+        //On verifie que le projet existe
+        if (!$projet)  throw $this->createNotFoundException('No projet found for id '.$idProjet);
+        //On récupere l'User
+        $user = $this->getDoctrine()->getRepository(User::class)->find($idUser);
         //Création d'une Note
         $note = new Note();
         $note->setProjet($projet)
@@ -259,7 +317,9 @@ class ProjetController extends AbstractController
 
         return $this->redirectToRoute('details_projet',['id'=>$idProjet]);
     }
-
+    /* ---------------------------------
+                MEMBRE
+    --------------------------------- */
     /**
      * @Route("/projet/add_membre", name="add_membre")
      * @param Request $request
@@ -356,12 +416,12 @@ class ProjetController extends AbstractController
 
             $result = $this->getDetailsProjet($donnees['projet']);
             return $this->render('projet/detailsProjet.html.twig',['projet'=>$result['projet'], 'tuteurs'=>$result['prof'], 'isTuteur'=>$result['isTuteur'],
-                'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'notes'=>$result['notes'], 'allStud'=>$result['allStud']]);
+                'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'notes'=>$result['notes'], 'allStud'=>$result['allStud'], 'allProf'=>$result['allProf']]);
         }
         $result = $this->getDetailsProjet($donnees['projet']);
 
         return $this->render('projet/detailsProjet.html.twig',['projet'=>$result['projet'], 'tuteurs'=>$result['prof'], 'isTuteur'=>$result['isTuteur'],
-            'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'notes'=>$result['notes'],'allStud'=>$result['allStud'], 'erreurs'=>$erreurs]);
+            'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'notes'=>$result['notes'],'allStud'=>$result['allStud'], 'allProf'=>$result['allProf'], 'erreurs'=>$erreurs]);
     }
 
     private function validatorNote(array $donnees)

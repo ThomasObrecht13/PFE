@@ -1,125 +1,315 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="linkDetails" href="javascript:link('details')">Details</a>
+        </li>
+        {% if not isTuteur %}
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+                <li class="nav-item">
+                    <a class="nav-link"  id="linkNote" href="javascript:link('note')">Note</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="linkEtudiant" href="javascript:link('etudiant')">Gérer les étudiants</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="linkTuteur" href="javascript:link('tuteur')">Gérer les tuteurs</a>
+                </li>
+            {% endif %}
+
+        {% endif %}
+    </ul>
+
     <div class="container-fluid">
-    <h1>Details projet</h1>
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">Sujet</th>
-            <th scope="col">Date debut</th>
-            <th scope="col">Étudiant</th>
-            <th scope="col">Tuteur</th>
-            <th scope="col">Soutenance</th>
-            <th scope="col">Rapport</th>
-            <th scope="col">Technique</th>
-        </tr>
-        </thead>
-        <body>
-           <tr>
-               <td>{{ projet.sujet }}</td>
-               <td>{{ projet.date|date('d/m/Y') }}</td>
-               <td>
-                   {% for etudiant in etudiants %}
-                       <li>{{ etudiant.email }}
-                           {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
-                               <form action="{{ path('delete_membre') }}" method="POST" style="display:inline">
-                                   <input type="hidden" name="token" value="{{ csrf_token('membre_delete') }}">
-                                   <input type="hidden" name="idProjet" value="{{ projet.id }}">
-                                   <input type="hidden" name="idUser" value="{{ etudiant.id }}">
-                                   <input type="hidden" name="_method" value="DELETE">
-                                   <button type="submit" class="btn"><i class="fa fa-close"></i></button>
-                               </form>
-                           {% endif %}
-                       </li>
-                   {% endfor %}
-               <td>
-                   {% for tuteur in tuteurs %}
-                       <li>{{ tuteur.email }}
-                           {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
-                               <form action="{{ path('delete_tuteur') }}" method="POST" style="display:inline">
-                                   <input type="hidden" name="token" value="{{ csrf_token('tuteur_delete') }}">
-                                   <input type="hidden" name="idProjet" value="{{ projet.id }}">
-                                   <input type="hidden" name="idUser" value="{{ tuteur.id }}">
-                                   <input type="hidden" name="_method" value="DELETE">
-                                   <button type="submit" class="btn"><i class="fa fa-close"></i></button>
-                               </form>
-                           {% endif %}
-                       </li>
-                   {% endfor %}
-               </td>
-               <td>{{ notes.0.soutenance }}</td>
-               <td>{{ notes.0.rapport }}</td>
-               <td>{{ notes.0.technique }}</td>
-           </tr>
-        </body>
-    </table>
-    {% if isTuteur %}
-        {# si l'utilisateur n'est pas tuteur du projet  #}
-        <form action="{{ path('add_tuteur') }}" method="POST" style="display:inline">
-        <input type="hidden" name="id" value="{{ projet.id }}">
-        <button type="submit" class="btn btn-primary">Devenir tuteur</button>
-    </form>
-    {% else %}
-        {# si l'utilisateur est tuteur du projet #}
-        {#
-        MODIFICATION DES NOTES PAR LE TUTEUR
-        #}
-        <h1>Vos notes</h1>
-        <form action="{{ path('edit_note') }}" method="POST" style="display:inline">
-            {# note est un tableau #}
-            {# SOUTENANCE #}
-            <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-sm">Soutenance</span>
-                </div>
-                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="soutenance" value="{{ notePerso.0.soutenance }}">
-            </div>
-            {# RAPPORT #}
-            <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-sm">Rapport</span>
-                </div>
-                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="rapport" value="{{ notePerso.0.rapport }}">
-            </div>
-            {# TECHNIQUE #}
-            <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-sm">Technique</span>
-                </div>
-                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="technique" value="{{ notePerso.0.technique }}">
-            </div>
+        <div id="details">
+            <h1>Details projet</h1>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Sujet</th>
+                    <th scope="col">Date debut</th>
+                    <th scope="col">Étudiant</th>
+                    <th scope="col">Tuteur</th>
+                    <th scope="col">Soutenance</th>
+                    <th scope="col">Rapport</th>
+                    <th scope="col">Technique</th>
+                </tr>
+                </thead>
+                <body>
+                   <tr>
+                       <td>{{ projet.sujet }}</td>
+                       <td>{{ projet.date|date('d/m/Y') }}</td>
+                       <td>
+                           {% for etudiant in etudiants %}
+                               <li>{{ etudiant.email }}
 
-                <input type="hidden" name="note" value="{{ notePerso.0.id }}">
-                <input type="hidden" name="projet" value="{{ projet.id }}">
-                <button type="submit" class="btn btn-primary">Valider</button>
-        </form>
+                               </li>
+                           {% endfor %}
+                       <td>
+                           {% for tuteur in tuteurs %}
+                               <li>{{ tuteur.email }}
 
+                               </li>
+                           {% endfor %}
+                       </td>
+                       <td>{{ notes.0.soutenance }}</td>
+                       <td>{{ notes.0.rapport }}</td>
+                       <td>{{ notes.0.technique }}</td>
+                   </tr>
+                </body>
+            </table>
+
+        </div>
+        {% if isTuteur %}
+            {# si l'utilisateur n'est pas tuteur du projet  #}
+            <form action="{{ path('add_tuteur') }}" method="POST" style="display:inline">
+                <input type="hidden" name="id" value="{{ projet.id }}">
+                <button type="submit" class="btn btn-primary">Devenir tuteur</button>
+            </form>
+        {% elseif is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+
+            {# si l'utilisateur est tuteur du projet #}
+            {#
+            MODIFICATION DES NOTES PAR LE TUTEUR
+            #}
+            {% if notePerso is defined %}
+            <div id="note">
+                <h1>Vos notes</h1>
+                <form action="{{ path('edit_note') }}" method="POST" style="display:inline">
+                    {# note est un tableau #}
+                    {# SOUTENANCE #}
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-sm">Soutenance</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="soutenance" value="{{ notePerso.0.soutenance }}">
+                    </div>
+                    {# RAPPORT #}
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-sm">Rapport</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="rapport" value="{{ notePerso.0.rapport }}">
+                    </div>
+                    {# TECHNIQUE #}
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-sm">Technique</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="technique" value="{{ notePerso.0.technique }}">
+                    </div>
+
+                        <input type="hidden" name="note" value="{{ notePerso.0.id }}">
+                        <input type="hidden" name="projet" value="{{ projet.id }}">
+                        <button type="submit" class="btn btn-primary">Valider</button>
+                </form>
+        </div>
+        {% endif %}
         {#
-            AJOUT D'UN ÉTUDIANT AU PROJET
+            GERER LES ÉTUDIANT DU PROJET
         #}
-        <h1>Ajouter un étudiant</h1>
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">Email</th>
-                <th scope="col">Option</th>
-            </tr>
-            </thead>
-            <body>
-                {% for stud in allStud %}
-                    <tr>
-                        <td>{{ stud.email }}</td>
-                        <td>
-                        <form action="{{ path('add_membre') }}" method="POST" style="display:inline">
-                            <input type="hidden" name="id" value="{{ projet.id }}">
-                            <input type="hidden" name="email" value="{{ stud.email }}">
-                            <button type="submit" class="btn btn-primary">Ajouter</button>
-                        </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </body>
-        </table>
+        <div id="etudiant">
+            <h1>Membres du projet</h1>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Email</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Prenom</th>
+                    <th scope="col">Option</th>
+                </tr>
+                </thead>
+                <body>
+                    {% for stud in etudiants %}
+                        <tr>
+                            <td>{{ stud.email }}</td>
+                            <td>{{ stud.nom }}</td>
+                            <td>{{ stud.prenom }}</td>
+
+                            <td>
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+                                   <form action="{{ path('delete_membre') }}" method="POST" style="display:inline">
+                                        <input type="hidden" name="token" value="{{ csrf_token('membre_delete') }}">
+                                        <input type="hidden" name="idProjet" value="{{ projet.id }}">
+                                        <input type="hidden" name="idUser" value="{{ stud.id }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-warning">Supprimer</button>
+                                   </form>
+                               {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </body>
+            </table>
+
+            <h1>Ajouter un étudiant</h1>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Email</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Prenom</th>
+
+                    <th scope="col">Option</th>
+                </tr>
+                </thead>
+                <body>
+                    {% for stud in allStud %}
+                        <tr>
+                            <td>{{ stud.email }}</td>
+                            <td>{{ stud.nom }}</td>
+                            <td>{{ stud.prenom }}</td>
+
+                            <td>
+                            <form action="{{ path('add_membre') }}" method="POST" style="display:inline">
+                                <input type="hidden" name="id" value="{{ projet.id }}">
+                                <input type="hidden" name="email" value="{{ stud.email }}">
+                                <button type="submit" class="btn btn-primary">Ajouter</button>
+                            </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </body>
+            </table>
+        </div>
+    {#
+    GERER LES TUTEURS DU PROJET
+    #}
+        <div id="tuteur">
+            <h1>Tuteur du projet</h1>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Email</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Prenom</th>
+                    <th scope="col">Option</th>
+                </tr>
+                </thead>
+                <body>
+                    {% for tuteur in tuteurs %}
+                        <tr>
+                            <td>{{ tuteur.email }}</td>
+                            <td>{{ tuteur.nom }}</td>
+                            <td>{{ tuteur.prenom }}</td>
+
+                            <td>
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+                                    <form action="{{ path('delete_tuteur') }}" method="POST" style="display:inline">
+                                        <input type="hidden" name="token" value="{{ csrf_token('tuteur_delete') }}">
+                                        <input type="hidden" name="idProjet" value="{{ projet.id }}">
+                                        <input type="hidden" name="idUser" value="{{ tuteur.id }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-warning">Supprimer</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </body>
+            </table>
+
+            <h1>Ajouter un tuteur</h1>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Email</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Prenom</th>
+                    <th scope="col">Option</th>
+                </tr>
+                </thead>
+                <body>
+                    {% for prof in allProf %}
+                        <tr>
+                            <td>{{ prof.email }}</td>
+                            <td>{{ prof.nom }}</td>
+                            <td>{{ prof.prenom }}</td>
+
+                            <td>
+                            <form action="{{ path('add_tuteur_id',{idUser: prof.id} ) }}" method="POST" style="display:inline">
+                                <input type="hidden" name="idProjet" value="{{ projet.id }}">
+                                <button type="submit" class="btn btn-primary">Ajouter</button>
+                            </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </body>
+
+            </table>
+        </div>
+    {# Fin de ifTuteur #}
     {% endif %}
-    </div>
+
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript">
+
+        window.onload=()=> {
+        let note = document.getElementById('note')
+        let etudiant = document.getElementById('etudiant')
+
+        note.style.display = 'none'
+        etudiant.style.display = 'none'
+        tuteur.style.display = 'none';
+
+        }
+
+        function link(test){
+
+            let details = document.getElementById('details')
+            let note = document.getElementById('note')
+            let etudiant = document.getElementById('etudiant')
+            let tuteur = document.getElementById('tuteur')
+
+            var linkDetails = document.getElementById('linkDetails')
+            var linkNote = document.getElementById('linkNote')
+            var linkEtudiant = document.getElementById('linkEtudiant')
+            var linkTuteur = document.getElementById('linkTuteur')
+
+            if(test === 'details'){
+                details.style.display = 'block';
+                note.style.display = 'none';
+                etudiant.style.display = 'none';
+                tuteur.style.display = 'none';
+
+                linkDetails.setAttribute("class","nav-link active")
+                linkNote.setAttribute("class","nav-link")
+                linkEtudiant.setAttribute("class","nav-link")
+                linkTuteur.setAttribute("class","nav-link")
+            }else if(test === 'note'){
+                details.style.display = 'none';
+                note.style.display = 'block';
+                etudiant.style.display = 'none';
+                tuteur.style.display = 'none';
+
+                linkDetails.setAttribute("class","nav-link")
+                linkNote.setAttribute("class","nav-link active")
+                linkEtudiant.setAttribute("class","nav-link")
+                linkTuteur.setAttribute("class","nav-link")
+            }else if(test === 'etudiant'){
+                details.style.display = 'none';
+                note.style.display = 'none';
+                etudiant.style.display = 'block';
+                tuteur.style.display = 'none';
+
+                linkDetails.setAttribute("class","nav-link")
+                linkNote.setAttribute("class","nav-link")
+                linkEtudiant.setAttribute("class","nav-link active")
+                linkTuteur.setAttribute("class","nav-link")
+            }else if(test === 'tuteur'){
+                details.style.display = 'none';
+                note.style.display = 'none';
+                etudiant.style.display = 'none';
+                tuteur.style.display = 'block';
+
+                linkDetails.setAttribute("class","nav-link")
+                linkNote.setAttribute("class","nav-link")
+                linkEtudiant.setAttribute("class","nav-link")
+                linkTuteur.setAttribute("class","nav-link active")
+            }
+        }
+
+    </script>
 {% endblock %}
