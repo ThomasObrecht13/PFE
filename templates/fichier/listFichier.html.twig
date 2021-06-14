@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>Fichier</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Depot</th>
+            <th scope="col">date depot</th>
+            <th scope="col">Option</th>
+
+        </tr>
+        </thead>
+        <body>
+        {% for fichier in fichiers %}
+            <tr>
+                <td>
+                    <a href="{{ asset('uploads/brochures/' ~ fichier.brochureFilename) }}">{{ fichier.brochureFilename}}</a>
+                </td>
+                <td>
+                    {{ fichier.dateDepot|date('d/m/Y H:i') }}
+                </td>
+                <td>
+                    <form action="{{ path('edit_fichier',{idProjet: idProjet}) }}" style="display:inline">
+                        <input type="hidden" name="idFichier" value="{{ fichier.id }}">
+                        <button type="submit" class="btn btn-primary">modifier</button>
+                    </form>
+
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+                        <form action="{{ path('delete_fichier',{idProjet: idProjet}) }}" method="POST" style="display:inline">
+                            <input type="hidden" name="token" value="{{ csrf_token('fichier_delete') }}">
+                            <input type="hidden" name="idFichier" value="{{ fichier.id }}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-warning">Supprimer</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </body>
+    </table>
+    <button type="button" class="btn btn-outline-primary"><a href="{{ path('add_fichier',{idProjet: idProjet}) }}">Deposer un nouveau fichier</a></button>
+
+{% endblock %}

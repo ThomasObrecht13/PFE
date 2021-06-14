@@ -54,6 +54,7 @@ class ProjetController extends AbstractController
 
         return $this->render('projet/mesProjet.html.twig',['projets'=>$mesProjets]);
     }
+
     /**
      * @Route("/projet/addProjet", name="add_projet")
      * @param Request $request

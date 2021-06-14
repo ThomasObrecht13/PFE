@@ -22,7 +22,7 @@
                     <td>{{ projet.date|date('d/m/Y') }}</td>
                     <td>
                         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
-                        <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
+                            <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
                         {% endif %}
 
                         {% if is_granted('ROLE_ADMIN') %}
@@ -32,10 +32,8 @@
                             <input type="hidden" name="id" value="{{ projet.id }}">
                             <input type="hidden" name="_method" value="DELETE">
                             <button type="submit" class="btn btn-warning">Supprimer</button>
-
                         </form>
                     </td>
-                    {% endif %}
                 </tr>
             {% endfor %}
             <tbody>
