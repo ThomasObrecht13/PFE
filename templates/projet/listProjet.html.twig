@@ -26,17 +26,21 @@
                         {% endif %}
 
                         {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
-                        <form action="{{ path('delete_projet') }}" method="POST" style="display:inline">
-                            <input type="hidden" name="token" value="{{ csrf_token('projet_delete') }}">
-                            <input type="hidden" name="id" value="{{ projet.id }}">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="btn btn-warning">Supprimer</button>
-                        </form>
+                            <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
+                            <form action="{{ path('delete_projet') }}" method="POST" style="display:inline">
+                                <input type="hidden" name="token" value="{{ csrf_token('projet_delete') }}">
+                                <input type="hidden" name="id" value="{{ projet.id }}">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-warning">Supprimer</button>
+                            </form>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
             <tbody>
         </table>
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+            <button type="button" class="btn btn-outline-primary"><a href="{{ path('add_projet') }}">Nouveau projet</a></button>
+        {% endif %}
     </div>
 {% endblock %}

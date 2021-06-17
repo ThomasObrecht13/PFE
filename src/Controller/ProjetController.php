@@ -8,12 +8,12 @@ use App\Entity\Note;
 use App\Entity\Projet;
 use App\Entity\User;
 use App\Form\ProjetType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
+
 
 class ProjetController extends AbstractController
 {
@@ -22,7 +22,6 @@ class ProjetController extends AbstractController
     --------------------------------- */
     /**
      * @Route("/autresProjets", name="list_projet")
-     *
      */
     public function listProjet()
     {
@@ -190,7 +189,7 @@ class ProjetController extends AbstractController
 
         /* On vérifie que l'Utilisateur a le droit de consulter les details du projet
              Droit d'accées: Utilisateur Etudiant - Membre
-                             Utilisateur Professeur
+                             Utilisateur Professeur - Note
                              Utilisateur Admin
          */
         $user = $this->getDoctrine()->getRepository(User::class)->find($idUser);
@@ -214,20 +213,20 @@ class ProjetController extends AbstractController
         //On cherche la moyenne de toutes les notes
         $details['notes'] = $this->getDoctrine()->getRepository(Note::class)->findNoteMoyenneByProjet($idProjet);
 
-        /*trouver les étudiant qui ne sont pas liées au projet*/
+        //Trouver les étudiant qui ne sont pas liées au projet
         $details['allStud'] = $this->getDoctrine()->getRepository(User::class)->findAll();
         foreach ($details['allStud'] as $user) {
-            //si un user n'est pas un stud ou si il est déjà associer au projet
+            //Si un user n'est pas un stud ou si il est déjà associer au projet
             if($user->getRoles() != ["ROLE_USER"] or in_array($user,$details['stud'])){
                 if (($key = array_search($user, $details['allStud'])) !== false) {
                     unset($details['allStud'][$key]);
                 }
             }
         }
-        /*trouver les tuteurs qui ne sont pas liées au projet*/
+        //Trouver les tuteurs qui ne sont pas liées au projet
         $details['allProf'] = $this->getDoctrine()->getRepository(User::class)->findAll();
         foreach ($details['allProf'] as $user) {
-            //si un user n'est pas un stud ou si il est déjà associer au projet
+            //Si un user n'est pas un stud ou si il est déjà associer au projet
             if($user->getRoles() != ["ROLE_PROF","ROLE_USER"] or in_array($user,$details['prof'])){
                 if (($key = array_search($user, $details['allProf'])) !== false) {
                     unset($details['allProf'][$key]);

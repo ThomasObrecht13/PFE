@@ -16,7 +16,9 @@ class ProjetType extends AbstractType
         $builder
             ->add('sujet')
             ->add('description',TextareaType::class)
-            ->add('date', DateTimeType::class)
+            ->add('date', DateTimeType::class,[
+                'input' => 'datetime'
+            ])
         ;
     }
 

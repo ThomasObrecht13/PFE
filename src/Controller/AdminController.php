@@ -39,7 +39,7 @@ class AdminController extends AbstractController
     public function addUser(Request $request,\Swift_Mailer $mailer)
     {
         if ($request->getMethod() == 'GET') {
-            return $this->render('admin/addAccount.html.twig');
+            return $this->render('admin/user/addAccount.html.twig');
         }
         if (!$this->isCsrfTokenValid('form_user', $request->get('token'))) {
             throw new  InvalidCsrfTokenException('Invalid CSRF token formulaire produit');
@@ -104,7 +104,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('admin_creer_utilisateur');
         }
         //si erreur, on revient sur le formulaire
-        return $this->render('admin/addAccount.html.twig',['donnees'=>$donnees,'erreurs'=>$erreurs]);
+        return $this->render('admin/user/addAccount.html.twig',['donnees'=>$donnees,'erreurs'=>$erreurs]);
     }
 
 
@@ -136,7 +136,7 @@ class AdminController extends AbstractController
     public function listUser(Request $request)
     {
         $user = $this->getDoctrine()->getRepository(User::class)->findAll();
-        return $this->render('admin/listUser.html.twig',['donnees'=>$user]);
+        return $this->render('admin/user/listUser.html.twig',['donnees'=>$user]);
     }
 
     /**
@@ -172,7 +172,7 @@ class AdminController extends AbstractController
 
             if (!$user) throw $this->createNotFoundException('No user found for id ' . $id);
 
-            return $this->render('/admin/editUser.html.twig', ['donnees' => $user]);
+            return $this->render('/admin/user/editUser.html.twig', ['donnees' => $user]);
         }
 
         if (!$this->isCsrfTokenValid('form_user', $request->get('token'))) {
@@ -208,7 +208,7 @@ class AdminController extends AbstractController
 
         $user = $em->getRepository(User::class)->findOneBy(['id'=>$id]);
 
-        return $this->render('/admin/editUser.html.twig', ['donnees' => $user, 'erreurs'=>$erreurs]);
+        return $this->render('/admin/user/editUser.html.twig', ['donnees' => $user, 'erreurs'=>$erreurs]);
     }
 
     private function validatorEditUser(array $donnees)

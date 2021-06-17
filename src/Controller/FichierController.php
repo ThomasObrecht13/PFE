@@ -89,10 +89,10 @@ class FichierController extends AbstractController
             $projet = $this->getDoctrine()->getRepository(Projet::class)->find($idProjet);
             $fichier->setProjet($projet);
 
-            $literalTime = new DateTime('now','Europe/Paris');
-            $expire_date = $literalTime->format("Y-m-d");
+            $literalTime = new DateTime('now');
+            $expire_date = $literalTime->format("Y-m-d H-i");
 
-            $fichier->setDateDepot(\DateTime::createFromFormat('Y-m-d',$expire_date));
+            $fichier->setDateDepot(\DateTime::createFromFormat('Y-m-d  H-i',$expire_date));
 
             $em->persist($fichier);
             $em->flush();
@@ -158,7 +158,6 @@ class FichierController extends AbstractController
                 // instead of its contents
                 $fichier->setBrochureFilename($newFilename);
             }
-            $timeZone = new DateTimeZone('Europe/Paris');
             $literalTime = new DateTime('now');
             $expire_date = $literalTime->format("Y-m-d H-i");
 
@@ -177,7 +176,7 @@ class FichierController extends AbstractController
      * @param Request $request
      * @param $idProjet
      */
-    public function deleteProjet(Request $request, $idProjet = null)
+    public function deleteFichier(Request $request, $idProjet = null)
     {
         if(!$this->isCsrfTokenValid('fichier_delete', $request->get('token'))) {
             throw new  InvalidCsrfTokenException('Invalid CSRF token formulaire fichier');

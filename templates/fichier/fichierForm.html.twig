@@ -3,18 +3,23 @@
     <div class="container-fluid">
         {{ form_start(form) }}
             {{ form_row(form.brochure) }}
+
         <input type="hidden" name="id" value="{{ idProjet }}">
         {{ form_end(form) }}
     </div>
 {% endblock %}
 {% block javascripts %}
+
 <script type="text/javascript">
     /*TODO
     afficher la value du form pour afficher le fichier  selectionnée
-     */
-    document.getElementById('fichier').addEventListener('change',test);
+
+   // document.getElementById('fichier_brochure').addEventListener('change',test);
+    var $sport = $('#fichier_brochure');
+    console.log('$sport')
+
     function test(){
         console.log('tets')
-    }
+    }*/
 </script>
 {% endblock %}
