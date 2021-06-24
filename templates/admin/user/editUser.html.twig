@@ -11,7 +11,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="inputGroup-sizing-sm">Email</span>
                 </div>
-                <input type="text" class="form-control {% if erreurs.email is defined %}border border-danger{% endif %}"
+                <input type="email" class="form-control {% if erreurs.email is defined %}border border-danger{% endif %}"
                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="email" value="{{donnees.email|default('')}}">
             </div>
 

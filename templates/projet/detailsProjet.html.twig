@@ -5,11 +5,11 @@
         <li class="nav-item">
             <a class="nav-link active" id="linkDetails" href="javascript:link('details')">Details</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link"  id="linkNote" href="javascript:link('note')">Notes</a>
+        </li>
         {% if not isTuteur %}
             {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
-                <li class="nav-item">
-                    <a class="nav-link"  id="linkNote" href="javascript:link('note')">Note</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" id="linkEtudiant" href="javascript:link('etudiant')">Gérer les étudiants</a>
                 </li>
@@ -17,7 +17,6 @@
                     <a class="nav-link" id="linkTuteur" href="javascript:link('tuteur')">Gérer les tuteurs</a>
                 </li>
             {% endif %}
-
         {% endif %}
     </ul>
 
@@ -53,60 +52,83 @@
                                </li>
                            {% endfor %}
                        </td>
-                       <td>{{ notes.0.soutenance }}</td>
-                       <td>{{ notes.0.rapport }}</td>
-                       <td>{{ notes.0.technique }}</td>
+                       <td>{{ noteMoyenne.0.soutenance }}</td>
+                       <td>{{ noteMoyenne.0.rapport }}</td>
+                       <td>{{ noteMoyenne.0.technique }}</td>
                    </tr>
                 </body>
             </table>
 
 
         </div>
-        {% if isTuteur %}
+        {% if isTuteur and is_granted('ROLE_PROF')%}
             {# si l'utilisateur n'est pas tuteur du projet  #}
             <form action="{{ path('add_tuteur') }}" method="POST" style="display:inline">
                 <input type="hidden" name="id" value="{{ projet.id }}">
                 <button type="submit" class="btn btn-primary">Devenir tuteur</button>
             </form>
-        {% elseif is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
-
-            {# si l'utilisateur est tuteur du projet #}
-            {#
-            MODIFICATION DES NOTES PAR LE TUTEUR
-            #}
-            {% if notePerso is defined %}
-            <div id="note">
-                <h1>Vos notes</h1>
-                <form action="{{ path('edit_note') }}" method="POST" style="display:inline">
-                    {# note est un tableau #}
-                    {# SOUTENANCE #}
-                    <div class="input-group input-group-sm mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-sm">Soutenance</span>
-                        </div>
-                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="soutenance" value="{{ notePerso.0.soutenance }}">
-                    </div>
-                    {# RAPPORT #}
-                    <div class="input-group input-group-sm mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-sm">Rapport</span>
-                        </div>
-                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="rapport" value="{{ notePerso.0.rapport }}">
-                    </div>
-                    {# TECHNIQUE #}
-                    <div class="input-group input-group-sm mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-sm">Technique</span>
-                        </div>
-                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="technique" value="{{ notePerso.0.technique }}">
-                    </div>
-
-                        <input type="hidden" name="note" value="{{ notePerso.0.id }}">
-                        <input type="hidden" name="projet" value="{{ projet.id }}">
-                        <button type="submit" class="btn btn-primary">Valider</button>
-                </form>
-        </div>
         {% endif %}
+        {# si l'utilisateur est tuteur du projet #}
+        {#
+        MODIFICATION DES NOTES PAR LE TUTEUR
+        #}
+        <div id="note">
+            {% if notePerso is defined and not isTuteur %}
+            <h1>Vos notes</h1>
+            <form action="{{ path('edit_note') }}" method="POST" style="display:inline">
+                {# note est un tableau #}
+                {# SOUTENANCE #}
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">Soutenance</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="soutenance" value="{{ notePerso.0.soutenance }}">
+                </div>
+                {# RAPPORT #}
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">Rapport</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="rapport" value="{{ notePerso.0.rapport }}">
+                </div>
+                {# TECHNIQUE #}
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">Technique</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="technique" value="{{ notePerso.0.technique }}">
+                </div>
+
+                    <input type="hidden" name="note" value="{{ notePerso.0.id }}">
+                    <input type="hidden" name="projet" value="{{ projet.id }}">
+                    <button type="submit" class="btn btn-primary">Valider</button>
+            </form>
+            {% endif %}
+        {% if allNote is defined %}
+        <h1>Notes des tuteurs</h1>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Tuteur</th>
+                    <th scope="col">Soutenance</th>
+                    <th scope="col">Rapport</th>
+                    <th scope="col">Technique</th>
+                </tr>
+                </thead>
+                <body>
+                    {% for note in allNote %}
+                        <tr>
+                        <td>{{ note.User.email }}</td>
+                        <td>{{ note.soutenance }}</td>
+                        <td>{{ note.rapport }}</td>
+                        <td>{{ note.technique }}</td>
+                        </tr>
+                    {% endfor %}
+                </body>
+            </table>
+        {% endif %}
+        </div>
+
         {#
             GERER LES ÉTUDIANT DU PROJET
         #}
@@ -240,71 +262,69 @@
 
             </table>
         </div>
-    {# Fin de ifTuteur #}
-    {% endif %}
 
 {% endblock %}
+
 {% block javascripts %}
     <script type="text/javascript">
 
         window.onload=()=> {
         let note = document.getElementById('note')
         let etudiant = document.getElementById('etudiant')
+        let tuteur = document.getElementById('tuteur')
 
         note.style.display = 'none'
         etudiant.style.display = 'none'
         tuteur.style.display = 'none';
-
         }
 
-        function link(test){
-
+        function link(page){
+            console.log(page)
             let details = document.getElementById('details')
             let note = document.getElementById('note')
             let etudiant = document.getElementById('etudiant')
             let tuteur = document.getElementById('tuteur')
 
-            var linkDetails = document.getElementById('linkDetails')
-            var linkNote = document.getElementById('linkNote')
-            var linkEtudiant = document.getElementById('linkEtudiant')
-            var linkTuteur = document.getElementById('linkTuteur')
+            let linkDetails = document.getElementById('linkDetails')
+            let linkNote = document.getElementById('linkNote')
+            let linkEtudiant = document.getElementById('linkEtudiant')
+            let linkTuteur = document.getElementById('linkTuteur')
 
-            if(test === 'details'){
+            if(page === 'details'){
                 details.style.display = 'block';
                 note.style.display = 'none';
                 etudiant.style.display = 'none';
                 tuteur.style.display = 'none';
-
                 linkDetails.setAttribute("class","nav-link active")
                 linkNote.setAttribute("class","nav-link")
                 linkEtudiant.setAttribute("class","nav-link")
                 linkTuteur.setAttribute("class","nav-link")
-            }else if(test === 'note'){
+
+            }else if(page === 'note'){
                 details.style.display = 'none';
                 note.style.display = 'block';
                 etudiant.style.display = 'none';
                 tuteur.style.display = 'none';
-
                 linkDetails.setAttribute("class","nav-link")
                 linkNote.setAttribute("class","nav-link active")
                 linkEtudiant.setAttribute("class","nav-link")
                 linkTuteur.setAttribute("class","nav-link")
-            }else if(test === 'etudiant'){
+
+            }else if(page === 'etudiant'){
                 details.style.display = 'none';
                 note.style.display = 'none';
                 etudiant.style.display = 'block';
                 tuteur.style.display = 'none';
-
                 linkDetails.setAttribute("class","nav-link")
                 linkNote.setAttribute("class","nav-link")
                 linkEtudiant.setAttribute("class","nav-link active")
                 linkTuteur.setAttribute("class","nav-link")
-            }else if(test === 'tuteur'){
+
+            }else if(page === 'tuteur'){
                 details.style.display = 'none';
                 note.style.display = 'none';
                 etudiant.style.display = 'none';
                 tuteur.style.display = 'block';
-
                 linkDetails.setAttribute("class","nav-link")
                 linkNote.setAttribute("class","nav-link")
                 linkEtudiant.setAttribute("class","nav-link")

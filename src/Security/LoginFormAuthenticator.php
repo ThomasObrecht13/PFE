@@ -110,7 +110,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
         // Redirection si ADMIN
         if($token->getUser()->getRoles() == ['ROLE_ADMIN','ROLE_USER']){
-            return new RedirectResponse($this->urlGenerator->generate('admin_creer_utilisateur'));
+            return new RedirectResponse($this->urlGenerator->generate('accueil'));
         }
         // Redirection si PROF
         if($token->getUser()->getRoles() == ['ROLE_PROF','ROLE_USER']){

@@ -69,4 +69,47 @@ class ProjetRepository extends ServiceEntityRepository
             ->setParameter(1,$user);
         return $qb->getQuery()->getResult();
     }
+
+    public function findSearch($search)
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p');
+
+        if(!empty($search->sujet)){
+            $qb = $qb
+                ->andWhere('p.sujet LIKE :sujet')
+                ->setParameter('sujet',"%{$search->sujet}%");
+        }
+        if(!empty($search->nomEtudiant)){
+            $qb = $qb
+                ->join( 'App:MEMBRE', 'm')
+                ->andWhere('p.id = m.Projet')
+                ->join( 'App:USER', 'u')
+                ->andWhere('u.id = m.User')
+                ->andWhere('u.email LIKE :nomEtudiant')
+                ->setParameter('nomEtudiant',"%{$search->nomEtudiant}%");
+        }
+        if(!empty($search->nomTuteur)){
+            $qb = $qb
+                ->join( 'App:NOTE', 'n')
+                ->andWhere('p.id = n.Projet')
+                ->join( 'App:USER', 'u')
+                ->andWhere('u.id = n.User')
+                ->andWhere('u.email LIKE :nomTuteur')
+                ->setParameter('nomTuteur',"%{$search->nomTuteur}%");
+        }
+        if(!empty($search->date)){
+            $dateDebut = $search->date.'-01-01 00:00:00';
+            $dateFin = $search->date.'-12-31 00:00:00';
+
+            $qb = $qb
+                ->andWhere('p.date < :dateFin')
+                ->andWhere('p.date >= :dateDebut')
+                ->setParameter('dateFin',$dateFin)
+                ->setParameter('dateDebut',$dateDebut);
+        }
+
+        return $qb->getQuery()->getResult();
+
+    }
 }

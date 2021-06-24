@@ -23,7 +23,7 @@
     </head>
     <body>
             <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-                    <a class="navbar-brand" href="{{ path('accueil') }}">App</a>
+                    <a class="navbar-brand" href="{{ path('accueil') }}">Accueil</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -31,24 +31,23 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <div class="navbar-nav mr-auto">
                             {% if is_granted('ROLE_ADMIN') %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('admin_creer_utilisateur') }}">Ajouter un compte</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('admin_gestion_utilisateur') }}">Gérer les comptes</a>
-                            </li>
-                            {% endif %}
-
-                            {% if not is_granted('ROLE_ADMIN') %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('admin_gestion_utilisateur') }}">Gérer les comptes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="{{ path('admin_list_projet') }}">Gérer les projets</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="{{ path('admin_list_fichier') }}">Gérer les dépots</a>
+                                </li>
+                            {% elseif is_granted('ROLE_USER') %}
                                 <li class="nav-item">
                                     <a class="nav-link " href="{{ path('mes_projets') }}">Mes projets</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " href="{{ path('list_projet') }}">Tous les projets</a>
+                                </li>
                             {% endif %}
-
-                            <li class="nav-item">
-                                <a class="nav-link " href="{{ path('list_projet') }}">Tous les projets</a>
-                            </li>
 
                         </div>
                         <div class="nav-item dropdown">

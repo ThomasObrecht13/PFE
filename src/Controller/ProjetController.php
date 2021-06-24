@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 
+use App\Data\SearchProjet;
 use App\Entity\Membre;
 use App\Entity\Note;
 use App\Entity\Projet;
 use App\Entity\User;
 use App\Form\ProjetType;
+use App\Form\SearchType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,15 +25,22 @@ class ProjetController extends AbstractController
     /**
      * @Route("/autresProjets", name="list_projet")
      */
-    public function listProjet()
+    public function listProjet(Request $request)
     {
         //On récupere l'User
         $user = $this->getUser();
+        $data = new SearchProjet();
+        $form = $this->createForm(SearchType::class,$data);
+        $form->handleRequest($request);
 
+        $projet = $this->getDoctrine()->getRepository(Projet::class)->findSearch($data);
         //on récupère tous les projets
-        $projet = $this->getDoctrine()->getRepository(Projet::class)->findAll();
+        //$projet = $this->getDoctrine()->getRepository(Projet::class)->findAll();
 
-        return $this->render('projet/listProjet.html.twig',['donnees'=>$projet]);
+        return $this->render('projet/listProjet.html.twig',[
+            'donnees'=>$projet,
+            'form_search'=>$form->createView()
+        ]);
     }
 
     /**
@@ -142,9 +151,8 @@ class ProjetController extends AbstractController
         }
 
         //On recupère l'ID des notes liées au projet
-        $idNotes = $em->getRepository(Note::class)->findNoteByProjet($idProjet);
-        foreach ($idNotes as $idNote){
-            $note = $em->getRepository(Note::class)->find($idNote);
+        $notes = $em->getRepository(Note::class)->findNotesByProjet($idProjet);
+        foreach ($notes as $note){
             $em->remove($note);
         }
 
@@ -171,7 +179,8 @@ class ProjetController extends AbstractController
         }
 
         return $this->render('projet/detailsProjet.html.twig',['projet'=>$donnees['projet'], 'tuteurs'=>$donnees['prof'], 'isTuteur'=>$donnees['isTuteur'],
-            'etudiants'=>$donnees['stud'], 'notePerso'=>$donnees['notePerso'], 'notes'=>$donnees['notes'], 'allStud'=>$donnees['allStud'], 'allProf'=>$donnees['allProf']]);
+            'etudiants'=>$donnees['stud'], 'notePerso'=>$donnees['notePerso'], 'noteMoyenne'=>$donnees['noteMoyenne'], 'allStud'=>$donnees['allStud'],
+            'allProf'=>$donnees['allProf'], 'allNote'=>$donnees['allNote']]);
 
     }
 
@@ -206,13 +215,21 @@ class ProjetController extends AbstractController
         //On cherche tous les professeurs liés au projet
         $details['prof'] = $this->getDoctrine()->getRepository(User::class)->findProfByProjet($idProjet);
 
-
+        /*
+         * NOTE
+         */
         //On cherche les notes mis par l'enseignant sur le projet
         $details['notePerso'] = $this->getDoctrine()->getRepository(Note::class)->findNoteByProjetAndUser($idProjet,$idUser);
 
         //On cherche la moyenne de toutes les notes
-        $details['notes'] = $this->getDoctrine()->getRepository(Note::class)->findNoteMoyenneByProjet($idProjet);
+        $details['noteMoyenne'] = $this->getDoctrine()->getRepository(Note::class)->findNoteMoyenneByProjet($idProjet);
 
+        //On cherche toutes les notes liées au projet
+        $details['allNote'] = $this->getDoctrine()->getRepository(Note::class)->findNotesByProjet($idProjet);
+
+        /*
+        * STUD ET PROF
+        */
         //Trouver les étudiant qui ne sont pas liées au projet
         $details['allStud'] = $this->getDoctrine()->getRepository(User::class)->findAll();
         foreach ($details['allStud'] as $user) {
@@ -416,12 +433,14 @@ class ProjetController extends AbstractController
 
             $result = $this->getDetailsProjet($donnees['projet']);
             return $this->render('projet/detailsProjet.html.twig',['projet'=>$result['projet'], 'tuteurs'=>$result['prof'], 'isTuteur'=>$result['isTuteur'],
-                'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'notes'=>$result['notes'], 'allStud'=>$result['allStud'], 'allProf'=>$result['allProf']]);
+                'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'noteMoyenne'=>$result['noteMoyenne'], 'allStud'=>$result['allStud'],
+                'allProf'=>$result['allProf'], 'allNote'=>$result['allNote']]);
         }
         $result = $this->getDetailsProjet($donnees['projet']);
 
         return $this->render('projet/detailsProjet.html.twig',['projet'=>$result['projet'], 'tuteurs'=>$result['prof'], 'isTuteur'=>$result['isTuteur'],
-            'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'notes'=>$result['notes'],'allStud'=>$result['allStud'], 'allProf'=>$result['allProf'], 'erreurs'=>$erreurs]);
+            'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'noteMoyenne'=>$result['noteMoyenne'],'allStud'=>$result['allStud'],
+            'allProf'=>$result['allProf'], 'allNote'=>$result['allNote'], 'erreurs'=>$erreurs]);
     }
 
     private function validatorNote(array $donnees)

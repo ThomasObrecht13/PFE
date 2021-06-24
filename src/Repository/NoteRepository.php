@@ -59,10 +59,10 @@ class NoteRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findNoteByProjet(String $projet)
+    public function findNotesByProjet(String $projet)
     {
         $qb = $this->createQueryBuilder('n');
-        $qb->select('n.id')
+        $qb->select('n')
             ->where('n.Projet = ?1')
             ->setParameter(1,$projet);
         return $qb->getQuery()->getResult();
@@ -88,4 +88,5 @@ class NoteRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
 }

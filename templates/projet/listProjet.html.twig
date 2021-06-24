@@ -1,46 +1,78 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="container-fluid">
-        <h1>Liste des projets</h1>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th scope="col">Sujet</th>
-                <th scope="col">Description</th>
-                <th scope="col">Date début</th>
-                <th scope="col">
-                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}option{% endif %}
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for projet in donnees %}
-                <tr>
-                    <td>{{ projet.sujet }}</td>
-                    <td>{{ projet.description }}</td>
+    <div class="container-fluid ">
+        <br>
+        <div class="row">
 
-                    <td>{{ projet.date|date('d/m/Y') }}</td>
-                    <td>
-                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
-                            <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
-                        {% endif %}
+            <div class="col-2 position-sticky">
+                <h1>Filtre</h1>
+                {{ form_start(form_search,{attr: {class: 'filter'}}) }}
+                    <h4>Sujet</h4>
+                    {{ form_row(form_search.sujet) }}
+                    <h4>Étudiant(e)</h4>
+                    {{ form_row(form_search.nomEtudiant) }}
+                    <h4>Enseigant(e)</h4>
+                    {{ form_row(form_search.nomTuteur) }}
+                    <h4>Année</h4>
+                    {{ form_row(form_search.date) }}
+                    <button type="submit" class="btn btn-primary w-75">Filtrer</button>
+                    <button type="reset"  class="btn btn-delete"><a style="color: white" href="{{ path("list_projet") }}">Reset</a></button>
 
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
-                            <form action="{{ path('delete_projet') }}" method="POST" style="display:inline">
-                                <input type="hidden" name="token" value="{{ csrf_token('projet_delete') }}">
-                                <input type="hidden" name="id" value="{{ projet.id }}">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="btn btn-warning">Supprimer</button>
-                            </form>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-            <tbody>
-        </table>
-        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
-            <button type="button" class="btn btn-outline-primary"><a href="{{ path('add_projet') }}">Nouveau projet</a></button>
-        {% endif %}
+                {{ form_end(form_search) }}
+            </div>
+            <div class="col-10 border-left ">
+                <h1>Liste des projets</h1>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Sujet</th>
+                        <th scope="col">Étudiant(e)</th>
+                        <th scope="col">Tuteur/Tutrice</th>
+                        <th scope="col">Année</th>
+                        <th scope="col">
+                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}option{% endif %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for projet in donnees %}
+                        <tr>
+                            <td>{{ projet.sujet }}</td>
+                            <td>
+                                {% for etudiant in projet.membres %}
+                                    <li>{{ etudiant.User.email }}</li>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for tuteur in projet.notes %}
+                                    <li>{{ tuteur.User.email }}</li>
+                                {% endfor %}
+                            </td>
+                            <td>{{ projet.date|date('Y') }}</td>
+                            <td>
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+                                    <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
+                                {% endif %}
+
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
+                                    <form action="{{ path('delete_projet') }}" method="POST" style="display:inline">
+                                        <input type="hidden" name="token" value="{{ csrf_token('projet_delete') }}">
+                                        <input type="hidden" name="id" value="{{ projet.id }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-warning">Supprimer</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tbody>
+                </table>
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+                    <button type="button" class="btn btn-outline-primary"><a href="{{ path('add_projet') }}">Nouveau projet</a></button>
+                {% endif %}
+            </div>
+        </div>
     </div>
+    <br>
 {% endblock %}

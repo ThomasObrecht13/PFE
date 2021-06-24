@@ -1,36 +1,40 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h1>Liste des utilisateurs</h1>
-    <table class="table table-striped table-responsive-sm">
-        <thead>
-        <tr>
-            <th scope="col">Nom</th>
-            <th scope="col">Prenom</th>
-            <th scope="col">Email</th>
-            <th scope="col">Option</th>
-        </tr>
-        </thead>
-        <body>
-            {% for user in donnees %}
-                {% if user.roles != ['ROLE_ADMIN','ROLE_USER'] %}
-                    <tr>
-                        <td>{% if user.nom %}{{ user.nom }}{% else %}<label> aucun nom renseigner</label>{% endif %}</td>
-                        <td>{% if user.prenom %}{{ user.prenom }}{% else %}<label> aucun prenom renseigner</label>{% endif %}</td>
-                        <td>{{ user.email }}</td>
-                        <th>
-                            <a href="{{ path('admin_edit_utilisateur', {id: user.id}) }}" class="btn btn-primary">modifier</a>
-                            {% if user.roles != ['ROLE_ADMIN','ROLE_USER'] %}
-                            <form action="{{ path('admin_delete_utilisateur') }}" method="POST" style="display:inline">
-                                <input type="hidden" name="token" value="{{ csrf_token('user_delete') }}">
-                                <input type="hidden" name="id" value="{{ user.id }}">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="btn btn-warning">Supprimer</button>
-                            </form>
-                            {% endif %}
-                        </th>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-        </body>
-    </table>
+    <div class="container-fluid">
+        <button type="button" class="btn btn-outline-primary"><a href="{{ path('admin_creer_utilisateur') }}">Nouveau projet</a></button>
+
+        <h1>Liste des utilisateurs</h1>
+        <table class="table table-striped table-responsive-sm">
+            <thead>
+            <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">Prenom</th>
+                <th scope="col">Email</th>
+                <th scope="col">Option</th>
+            </tr>
+            </thead>
+            <body>
+                {% for user in donnees %}
+                    {% if user.roles != ['ROLE_ADMIN','ROLE_USER'] %}
+                        <tr>
+                            <td>{% if user.nom %}{{ user.nom }}{% else %}<label> aucun nom renseigner</label>{% endif %}</td>
+                            <td>{% if user.prenom %}{{ user.prenom }}{% else %}<label> aucun prenom renseigner</label>{% endif %}</td>
+                            <td>{{ user.email }}</td>
+                            <th>
+                                <a href="{{ path('admin_edit_utilisateur', {id: user.id}) }}" class="btn btn-primary">modifier</a>
+                                {% if user.roles != ['ROLE_ADMIN','ROLE_USER'] %}
+                                <form action="{{ path('admin_delete_utilisateur') }}" method="POST" style="display:inline">
+                                    <input type="hidden" name="token" value="{{ csrf_token('user_delete') }}">
+                                    <input type="hidden" name="id" value="{{ user.id }}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="submit" class="btn btn-warning">Supprimer</button>
+                                </form>
+                                {% endif %}
+                            </th>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </body>
+        </table>
+    </div>
 {% endblock %}

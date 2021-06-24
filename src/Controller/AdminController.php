@@ -2,10 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\Fichier;
+use App\Entity\Membre;
+use App\Entity\Note;
+use App\Entity\Projet;
 use App\Entity\User;
+use App\Form\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -56,6 +62,7 @@ class AdminController extends AbstractController
             /*
              * On crée un User avec les données
              */
+
             $user = new User();
             if($donnees['role']=='1'){
                 $user->setRoles(['ROLE_PROF']);
@@ -83,6 +90,7 @@ class AdminController extends AbstractController
              * On envoie un mail pour changer de mot de passe
              */
             //On crée le lien contenu dans le mail
+
             $link = 'http://127.0.0.1:8000/resetpassword/'.$user->getTokenMail();
             //On crée le mail
             $message = (new \Swift_Message('Nouveau contact'))
@@ -149,9 +157,17 @@ class AdminController extends AbstractController
             throw new  InvalidCsrfTokenException('Invalid CSRF token formulaire user');
         }
         $em = $this->getDoctrine()->getManager();
-        $id= $request->request->get('id');
-        $user = $em->getRepository(User::class)->find($id);
-        if (!$user)  throw $this->createNotFoundException('No user found for id '.$id);
+        $idUser = $request->request->get('id');
+        $user = $em->getRepository(User::class)->find($idUser);
+        if (!$user)  throw $this->createNotFoundException('No user found for id '.$idUser);
+        $membres = $em->getRepository(Membre::class)->findBy(['User'=> $idUser]);
+        $notes = $em->getRepository(Note::class)->findBy(['User'=> $idUser]);
+        foreach ($membres as $membre){
+            $em->remove($membre);
+        }
+        foreach ($notes as $note){
+            $em->remove($note);
+        }
         $em->remove($user);
         $em->flush();
         return $this->redirectToRoute('admin_gestion_utilisateur');
@@ -228,4 +244,51 @@ class AdminController extends AbstractController
 
         return $erreurs;
     }
+/* ---------------------------------
+            FICHIER
+--------------------------------- */
+    /**
+     * @Route("/admin/listFichier", name="admin_list_fichier")
+     * @param Request $request
+     */
+    public function listFichier(Request $request)
+    {
+        $fichiers = $this->getDoctrine()->getRepository(Fichier::class)->findAll();
+        return $this->render('admin/fichier/listFichier.html.twig',['fichiers'=>$fichiers]);
+    }
+    /**
+     * @Route("/admin/projet/{idProjet}/deleteFichier", name="admin_delete_fichier", methods={"DELETE"})
+     * @param Request $request
+     * @param $idProjet
+     */
+    public function deleteFichier(Request $request, $idProjet = null)
+    {
+        if(!$this->isCsrfTokenValid('fichier_delete', $request->get('token'))) {
+            throw new  InvalidCsrfTokenException('Invalid CSRF token formulaire fichier');
+        }
+        $em = $this->getDoctrine()->getManager();
+        $idProjet = $request->attributes->get('idProjet');
+        $idFichier = $request->request->get('idFichier');
+
+        $fichier = $em->getRepository(Fichier::class)->find($idFichier);
+        //On verifie que le projet existe
+        if (!$fichier)  throw $this->createNotFoundException('No fichier found for id '.$idFichier);
+
+        $em->remove($fichier);
+        $em->flush();
+        return $this->redirectToRoute('admin_list_fichier');
+    }
+/* ---------------------------------
+            PROJET
+--------------------------------- */
+    /**
+     * @Route("/admin/listProjet", name="admin_list_projet")
+     * @param Request $request
+     */
+    public function listProjet(Request $request)
+    {
+        $projets = $this->getDoctrine()->getRepository(Projet::class)->findAll();
+        return $this->render('admin/projet/listProjet.html.twig',['projets'=>$projets]);
+    }
+
 }
