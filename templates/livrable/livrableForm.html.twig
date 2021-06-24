@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container-fluid">
+        {{ form_start(form) }}
+        {{ form_row(form) }}
+
+        <input type="hidden" name="id" value="{{ idProjet }}">
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

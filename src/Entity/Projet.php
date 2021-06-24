@@ -49,11 +49,17 @@ class Projet
      */
     private $fichiers;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Livrable::class, mappedBy="Projet")
+     */
+    private $livrables;
+
     public function __construct()
     {
         $this->notes = new ArrayCollection();
         $this->membres = new ArrayCollection();
         $this->fichiers = new ArrayCollection();
+        $this->livrables = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -181,6 +187,36 @@ class Projet
             // set the owning side to null (unless already changed)
             if ($fichier->getProjet() === $this) {
                 $fichier->setProjet(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Livrable[]
+     */
+    public function getLivrables(): Collection
+    {
+        return $this->livrables;
+    }
+
+    public function addLivrable(Livrable $livrable): self
+    {
+        if (!$this->livrables->contains($livrable)) {
+            $this->livrables[] = $livrable;
+            $livrable->setProjet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLivrable(Livrable $livrable): self
+    {
+        if ($this->livrables->removeElement($livrable)) {
+            // set the owning side to null (unless already changed)
+            if ($livrable->getProjet() === $this) {
+                $livrable->setProjet(null);
             }
         }
 

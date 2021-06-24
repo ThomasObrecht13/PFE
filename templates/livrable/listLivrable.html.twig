@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container-fluid">
+        <h1>Livrable</h1>
+        {% if livrables %}
+        <div class="list-group list-group-flush">
+            {% for livrable in livrables %}
+                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ livrable.titreLivrable }}</h5>
+                    </div>
+                    <p class="mb-1"> {{ livrable.libelleLivrable }}</p>
+                </a>
+            {% endfor %}
+        </div>
+        {% else %}
+            <div>Aucun Livrables</div>
+        {% endif %}
+        <br>
+        {% if is_granted('ROLE_PROF') %}
+            <button type="button" class="btn btn-outline-primary"><a href="{{ path('add_livrable',{idProjet: idProjet}) }}">Créer un nouveau livrable</a></button>
+        {% endif %}
+    </div>
+{% endblock %}
