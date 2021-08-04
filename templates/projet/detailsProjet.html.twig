@@ -59,8 +59,6 @@
                 </body>
             </table>
 
-
-        </div>
         {% if isTuteur and is_granted('ROLE_PROF')%}
             {# si l'utilisateur n'est pas tuteur du projet  #}
             <form action="{{ path('add_tuteur') }}" method="POST" style="display:inline">
@@ -68,6 +66,8 @@
                 <button type="submit" class="btn btn-primary">Devenir tuteur</button>
             </form>
         {% endif %}
+        </div>
+
         {# si l'utilisateur est tuteur du projet #}
         {#
         MODIFICATION DES NOTES PAR LE TUTEUR

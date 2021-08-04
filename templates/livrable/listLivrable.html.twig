@@ -1,18 +1,45 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     <div class="container-fluid">
-        <h1>Livrable</h1>
         {% if livrables %}
-        <div class="list-group list-group-flush">
-            {% for livrable in livrables %}
-                <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">{{ livrable.titreLivrable }}</h5>
-                    </div>
-                    <p class="mb-1"> {{ livrable.libelleLivrable }}</p>
-                </a>
-            {% endfor %}
-        </div>
+            <h1>Mes projets</h1>
+            <table class="table table-striped ">
+                <thead>
+                <tr>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Libelle</th>
+                    <th scope="col">Date dépôt</th>
+                    <th scope="col">Document</th>
+                    <th scope="col">Option</th>
+                </tr>
+                </thead>
+                <body>
+                {% for livrable in livrables %}
+                    <tr>
+                        <td>{{ livrable.titreLivrable }}</td>
+                        <td>{{ livrable.libelleLivrable }}</td>
+                        <td>{{ livrable.dateDepot|date('d/m/Y H:i') }}</td>
+                        <td>
+                            <a href="{{ asset('uploads/brochures/' ~ livrable.brochureFilename) }}">{{ livrable.brochureFilename}}</a>
+                        </td>
+                        <td>
+                            <a href="{{ path('edit_livrable', {idProjet: idProjet, idLivrable: livrable.id}) }}" class="btn btn-primary">Déposer</a>
+                            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
+
+                            <form action="{{ path('delete_livrable',{idProjet: idProjet, idLivrable: livrable.id}) }}" method="POST" style="display:inline">
+                                <input type="hidden" name="token" value="{{ csrf_token('livrable_delete') }}">
+                                <input type="hidden" name="idLivrable" value="{{ livrable.id }}">
+                                <input type="hidden" name="idProjet" value="{{ idProjet }}">
+
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-warning">Supprimer</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </body>
+            </table>
         {% else %}
             <div>Aucun Livrables</div>
         {% endif %}
@@ -20,5 +47,5 @@
         {% if is_granted('ROLE_PROF') %}
             <button type="button" class="btn btn-outline-primary"><a href="{{ path('add_livrable',{idProjet: idProjet}) }}">Créer un nouveau livrable</a></button>
         {% endif %}
-    </div>
+        </div>
 {% endblock %}

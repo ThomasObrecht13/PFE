@@ -7,11 +7,9 @@ use App\Entity\Membre;
 use App\Entity\Note;
 use App\Entity\Projet;
 use App\Entity\User;
-use App\Form\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -231,10 +229,10 @@ class AdminController extends AbstractController
     {
         $erreurs=[];
         if(count($this->getDoctrine()->getRepository(User::class)->getSameEmailOnChange($donnees['email'],$donnees['id']))>=1)
-            $erreurs['email']='Un compte utilise déjà cette addresse';
+            $erreurs['email']='Un compte utilise déjà cette adresse';
 
         if(empty($donnees['email']))
-            $erreurs['email']='Veuillez indiquer une addresse';
+            $erreurs['email']='Veuillez indiquer une adresse';
 
         if(empty($donnees['role']))
             $erreurs['role']='Veuillez sélectionner un rôle';

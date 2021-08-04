@@ -45,11 +45,6 @@ class Projet
     private $description;
 
     /**
-     * @ORM\OneToMany(targetEntity=Fichier::class, mappedBy="Projet")
-     */
-    private $fichiers;
-
-    /**
      * @ORM\OneToMany(targetEntity=Livrable::class, mappedBy="Projet")
      */
     private $livrables;
@@ -58,7 +53,6 @@ class Projet
     {
         $this->notes = new ArrayCollection();
         $this->membres = new ArrayCollection();
-        $this->fichiers = new ArrayCollection();
         $this->livrables = new ArrayCollection();
     }
 
@@ -159,36 +153,6 @@ class Projet
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Fichier[]
-     */
-    public function getFichiers(): Collection
-    {
-        return $this->fichiers;
-    }
-
-    public function addFichier(Fichier $fichier): self
-    {
-        if (!$this->fichiers->contains($fichier)) {
-            $this->fichiers[] = $fichier;
-            $fichier->setProjet($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFichier(Fichier $fichier): self
-    {
-        if ($this->fichiers->removeElement($fichier)) {
-            // set the owning side to null (unless already changed)
-            if ($fichier->getProjet() === $this) {
-                $fichier->setProjet(null);
-            }
-        }
 
         return $this;
     }

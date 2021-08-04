@@ -26,6 +26,7 @@
                     <thead>
                     <tr>
                         <th scope="col">Sujet</th>
+                        <th scope="col">Description</th>
                         <th scope="col">Étudiant(e)</th>
                         <th scope="col">Tuteur/Tutrice</th>
                         <th scope="col">Année</th>
@@ -38,6 +39,8 @@
                     {% for projet in donnees %}
                         <tr>
                             <td>{{ projet.sujet }}</td>
+                            <td>{{ projet.description }}</td>
+
                             <td>
                                 {% for etudiant in projet.membres %}
                                     <li>{{ etudiant.User.email }}</li>

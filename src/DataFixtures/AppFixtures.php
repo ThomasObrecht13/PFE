@@ -38,8 +38,8 @@ class AppFixtures extends Fixture
         $users = [
             ['id' => 1, 'email' => 'admin@admin','pwd'=>'admin','role'=>(array)'ROLE_ADMIN'],
             ['id' => 2, 'email' => 'stud@stud','pwd'=>'stud','role'=>(array)'ROLE_USER'],
-            ['id' => 3, 'email' => 'michou@michou','pwd'=>'stud','role'=>(array)'ROLE_USER'],
-            ['id' => 4, 'email' => 'inox@inox','pwd'=>'stud','role'=>(array)'ROLE_USER'],
+            ['id' => 3, 'email' => 'nicolas@nicolas','pwd'=>'stud','role'=>(array)'ROLE_USER'],
+            ['id' => 4, 'email' => 'hugo@hugo','pwd'=>'stud','role'=>(array)'ROLE_USER'],
             ['id' => 5, 'email' => 'luc@luc','pwd'=>'stud','role'=>(array)'ROLE_USER'],
             ['id' => 6, 'email' => 'prof@prof','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
             ['id' => 7, 'email' => 'dupont@dupont','pwd'=>'prof','role'=>(array)'ROLE_PROF'],
@@ -108,8 +108,8 @@ class AppFixtures extends Fixture
     public function loadMembre(ObjectManager $manager)
     {
         $membres = [
-            ['id' => 1, 'chefProjet' => true, 'projet' => 'Appli web', 'user' => 'michou@michou'],
-            ['id' => 2, 'chefProjet' => false, 'projet' => 'Appli web', 'user' => 'inox@inox'],
+            ['id' => 1, 'chefProjet' => true, 'projet' => 'Appli web', 'user' => 'nicolas@nicolas'],
+            ['id' => 2, 'chefProjet' => false, 'projet' => 'Appli web', 'user' => 'hugo@hugo'],
         ];
         foreach ($membres as $membre) {
             $new_membre = new Membre();

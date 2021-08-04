@@ -22,55 +22,56 @@
         {% endblock %}
     </head>
     <body>
-            <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-                    <a class="navbar-brand" href="{{ path('accueil') }}">Accueil</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
 
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <div class="navbar-nav mr-auto">
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('admin_gestion_utilisateur') }}">Gérer les comptes</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="{{ path('admin_list_projet') }}">Gérer les projets</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="{{ path('admin_list_fichier') }}">Gérer les dépots</a>
-                                </li>
-                            {% elseif is_granted('ROLE_USER') %}
-                                <li class="nav-item">
-                                    <a class="nav-link " href="{{ path('mes_projets') }}">Mes projets</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link " href="{{ path('list_projet') }}">Tous les projets</a>
-                                </li>
-                            {% endif %}
+        <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="{{ path('accueil') }}">Accueil</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-                        </div>
-                        <div class="nav-item dropdown">
-                            <button class="btn btn-{% if app.user.nom is not defined or null %}warning{% else %}secondary{% endif %} dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Compte
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item {% if app.user.nom is not defined or null %}badge-warning{% endif %}" href="{{ path('user_profil') }}">Profil</a>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <div class="navbar-nav mr-auto">
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('admin_gestion_utilisateur') }}">Gérer les comptes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " href="{{ path('admin_list_projet') }}">Gérer les projets</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " href="{{ path('admin_list_fichier') }}">Gérer les dépots</a>
+                            </li>
+                        {% elseif is_granted('ROLE_USER') %}
+                            <li class="nav-item">
+                                <a class="nav-link " href="{{ path('mes_projets') }}">Mes projets</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " href="{{ path('list_projet') }}">Tous les projets</a>
+                            </li>
+                        {% endif %}
 
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
-                            </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <button class="btn btn-{% if app.user.nom is not defined or null %}warning{% else %}secondary{% endif %} dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Compte
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item {% if app.user.nom is not defined or null %}badge-warning{% endif %}" href="{{ path('user_profil') }}">Profil</a>
+
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
                         </div>
                     </div>
-            </nav>
+                </div>
+        </nav>
 
-            {% for label, messages in app.flashes(['success', 'warning', 'danger']) %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ label }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+        {% for label, messages in app.flashes(['success', 'warning', 'danger']) %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
             {% endfor %}
+        {% endfor %}
 
         {% block body %}
 

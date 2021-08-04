@@ -28,6 +28,16 @@ class Livrable
     private $libelleLivrable;
 
     /**
+     * @ORM\Column(type="datetime")
+     */
+    private $dateDepot;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $brochureFilename;
+
+    /**
      * @ORM\ManyToOne(targetEntity=Projet::class, inversedBy="livrables")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -58,6 +68,28 @@ class Livrable
     public function setLibelleLivrable(string $libelleLivrable): self
     {
         $this->libelleLivrable = $libelleLivrable;
+
+        return $this;
+    }
+    public function getDateDepot(): ?\DateTimeInterface
+    {
+        return $this->dateDepot;
+    }
+
+    public function setDateDepot(\DateTimeInterface $dateDepot): self
+    {
+        $this->dateDepot = $dateDepot;
+
+        return $this;
+    }
+    public function getBrochureFilename(): ?string
+    {
+        return $this->brochureFilename;
+    }
+
+    public function setBrochureFilename(string $brochureFilename): self
+    {
+        $this->brochureFilename = $brochureFilename;
 
         return $this;
     }

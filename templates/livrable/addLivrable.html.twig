@@ -1,0 +1,36 @@
+{% extends 'base.html.twig'%}
+{% block body %}
+    <div class="container-fluid">
+        <form method="post" action="{{ path('add_livrable',{idProjet: idProjet}) }}">
+            <legend>Ajouter un livrable</legend>
+
+            {% if erreurs.titre is defined %}
+                <div style="color: red">{{ erreurs.titre }}</div>
+            {% endif %}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Titre</span>
+                </div>
+                <input type="text" class="form-control {% if erreurs.titre is defined %}border border-danger{% endif %}"
+                       aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="titre"
+                       value="{{donnees.titre|default('')}}">
+            </div>
+
+            {% if erreurs.libelle is defined %}
+                <div style="color: red">{{ erreurs.libelle }}</div>
+            {% endif %}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Libelle</span>
+                </div>
+                <input type="text" class="form-control {% if erreurs.libelle is defined %}border border-danger{% endif %}"
+                       aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="libelle"
+                       value="{{donnees.libelle|default('')}}">
+            </div>
+
+            <input type="hidden" name="id" value="{{ idProjet }}">
+
+            <button type="submit" class="btn btn-primary">{{ button|default('Valider') }}</button>
+        </form>
+    </div>
+{% endblock %}
