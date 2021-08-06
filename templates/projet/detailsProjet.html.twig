@@ -18,6 +18,9 @@
                 </li>
             {% endif %}
         {% endif %}
+        <li class="nav-item">
+            <a class="nav-link"  id="linkNote" href="javascript:link('livrables')">Livrables</a>
+        </li>
     </ul>
 
     <div class="container-fluid">
@@ -262,7 +265,45 @@
 
             </table>
         </div>
+        <div id="livrables">
+            {% if livrables %}
+                <h1>Mes Livrables</h1>
+                <table class="table table-striped ">
+                    <thead>
+                    <tr>
+                        <th scope="col">Titre</th>
+                        <th scope="col">Libelle</th>
+                        <th scope="col">Date dépôt</th>
+                        <th scope="col">Document</th>
+                    </tr>
+                    </thead>
+                    <body>
+                        {% for livrable in livrables %}
+                            {% if  livrable.brochureFilename %}
 
+                                <tr>
+                                    <td>{{ livrable.titreLivrable }}</td>
+                                    <td>{{ livrable.libelleLivrable }}</td>
+                                    <td>
+                                        {% if livrable.dateDepot %}
+                                            {{ livrable.dateDepot|date('d/m/Y H:i') }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <a href="{{ asset('uploads/brochures/' ~ livrable.brochureFilename) }}">{{ livrable.brochureFilename}}</a>
+                                    </td>
+
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </body>
+                </table>
+            {% else %}
+                <div>Aucun Livrables</div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
@@ -272,10 +313,12 @@
         let note = document.getElementById('note')
         let etudiant = document.getElementById('etudiant')
         let tuteur = document.getElementById('tuteur')
+        let livrables = document.getElementById('livrables')
 
         note.style.display = 'none'
         etudiant.style.display = 'none'
         tuteur.style.display = 'none';
+        livrables.style.display = 'none';
         }
 
         function link(page){
@@ -284,51 +327,81 @@
             let note = document.getElementById('note')
             let etudiant = document.getElementById('etudiant')
             let tuteur = document.getElementById('tuteur')
+            let livrables = document.getElementById('livrables')
 
             let linkDetails = document.getElementById('linkDetails')
             let linkNote = document.getElementById('linkNote')
             let linkEtudiant = document.getElementById('linkEtudiant')
             let linkTuteur = document.getElementById('linkTuteur')
+            let linkLivrables = document.getElementById('linkLivrables')
 
             if(page === 'details'){
                 details.style.display = 'block';
                 note.style.display = 'none';
                 etudiant.style.display = 'none';
                 tuteur.style.display = 'none';
+                livrables.style.display = 'none';
+
                 linkDetails.setAttribute("class","nav-link active")
                 linkNote.setAttribute("class","nav-link")
                 linkEtudiant.setAttribute("class","nav-link")
                 linkTuteur.setAttribute("class","nav-link")
+                linkLivrables.setAttribute("class","nav-link")
+
 
             }else if(page === 'note'){
                 details.style.display = 'none';
                 note.style.display = 'block';
                 etudiant.style.display = 'none';
                 tuteur.style.display = 'none';
+                livrables.style.display = 'none';
+
                 linkDetails.setAttribute("class","nav-link")
                 linkNote.setAttribute("class","nav-link active")
                 linkEtudiant.setAttribute("class","nav-link")
                 linkTuteur.setAttribute("class","nav-link")
+                linkLivrables.setAttribute("class","nav-link")
+
 
             }else if(page === 'etudiant'){
                 details.style.display = 'none';
                 note.style.display = 'none';
                 etudiant.style.display = 'block';
                 tuteur.style.display = 'none';
+                livrables.style.display = 'none';
+
                 linkDetails.setAttribute("class","nav-link")
                 linkNote.setAttribute("class","nav-link")
                 linkEtudiant.setAttribute("class","nav-link active")
                 linkTuteur.setAttribute("class","nav-link")
+                linkLivrables.setAttribute("class","nav-link")
+
 
             }else if(page === 'tuteur'){
                 details.style.display = 'none';
                 note.style.display = 'none';
                 etudiant.style.display = 'none';
                 tuteur.style.display = 'block';
+                livrables.style.display = 'none';
+
                 linkDetails.setAttribute("class","nav-link")
                 linkNote.setAttribute("class","nav-link")
                 linkEtudiant.setAttribute("class","nav-link")
                 linkTuteur.setAttribute("class","nav-link active")
+                linkLivrables.setAttribute("class","nav-link")
+            }else if(page === 'livrables'){
+                details.style.display = 'none';
+                note.style.display = 'none';
+                etudiant.style.display = 'none';
+                tuteur.style.display = 'none';
+                livrables.style.display = 'block';
+
+                linkDetails.setAttribute("class","nav-link")
+                linkNote.setAttribute("class","nav-link")
+                linkEtudiant.setAttribute("class","nav-link")
+                linkTuteur.setAttribute("class","nav-link")
+                linkLivrables.setAttribute("class","nav-link active")
+
             }
         }
 

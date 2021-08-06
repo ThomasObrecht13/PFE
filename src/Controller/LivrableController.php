@@ -64,9 +64,11 @@ class LivrableController extends AbstractController
             $projet = $this->getDoctrine()->getRepository(Projet::class)->find($idProjet);
             $livrable->setProjet($projet);
 
+            /*
             $literalTime = new DateTime('now');
             $expire_date = $literalTime->format("Y-m-d H-i");
             $livrable->setDateDepot(\DateTime::createFromFormat('Y-m-d  H-i',$expire_date));
+*/
 
             $em->persist($livrable);
             $em->flush();

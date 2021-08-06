@@ -2,7 +2,7 @@
 {% block body %}
     <div class="container-fluid">
         {% if livrables %}
-            <h1>Mes projets</h1>
+            <h1>Mes Livrables</h1>
             <table class="table table-striped ">
                 <thead>
                 <tr>
@@ -18,7 +18,12 @@
                     <tr>
                         <td>{{ livrable.titreLivrable }}</td>
                         <td>{{ livrable.libelleLivrable }}</td>
-                        <td>{{ livrable.dateDepot|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% if livrable.dateDepot %}
+                                {{ livrable.dateDepot|date('d/m/Y H:i') }}
+                            {% endif %}
+                        </td>
+
                         <td>
                             <a href="{{ asset('uploads/brochures/' ~ livrable.brochureFilename) }}">{{ livrable.brochureFilename}}</a>
                         </td>

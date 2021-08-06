@@ -4,6 +4,7 @@ namespace App\Controller;
 
 
 use App\Data\SearchProjet;
+use App\Entity\Livrable;
 use App\Entity\Membre;
 use App\Entity\Note;
 use App\Entity\Projet;
@@ -180,7 +181,7 @@ class ProjetController extends AbstractController
 
         return $this->render('projet/detailsProjet.html.twig',['projet'=>$donnees['projet'], 'tuteurs'=>$donnees['prof'], 'isTuteur'=>$donnees['isTuteur'],
             'etudiants'=>$donnees['stud'], 'notePerso'=>$donnees['notePerso'], 'noteMoyenne'=>$donnees['noteMoyenne'], 'allStud'=>$donnees['allStud'],
-            'allProf'=>$donnees['allProf'], 'allNote'=>$donnees['allNote']]);
+            'allProf'=>$donnees['allProf'], 'allNote'=>$donnees['allNote'], 'livrables'=>$donnees['livrables']]);
 
     }
 
@@ -250,6 +251,8 @@ class ProjetController extends AbstractController
                 }
             }
         }
+        $details['livrables'] = $this->getDoctrine()->getRepository(Livrable::class)->findBy(['Projet' => $idProjet]);
+
         return $details;
     }
     /* ---------------------------------
@@ -434,13 +437,13 @@ class ProjetController extends AbstractController
             $result = $this->getDetailsProjet($donnees['projet']);
             return $this->render('projet/detailsProjet.html.twig',['projet'=>$result['projet'], 'tuteurs'=>$result['prof'], 'isTuteur'=>$result['isTuteur'],
                 'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'noteMoyenne'=>$result['noteMoyenne'], 'allStud'=>$result['allStud'],
-                'allProf'=>$result['allProf'], 'allNote'=>$result['allNote']]);
+                'allProf'=>$result['allProf'], 'allNote'=>$result['allNote'], 'livrables'=>$result['livrables']]);
         }
         $result = $this->getDetailsProjet($donnees['projet']);
 
         return $this->render('projet/detailsProjet.html.twig',['projet'=>$result['projet'], 'tuteurs'=>$result['prof'], 'isTuteur'=>$result['isTuteur'],
             'etudiants'=>$result['stud'], 'notePerso'=>$result['notePerso'], 'noteMoyenne'=>$result['noteMoyenne'],'allStud'=>$result['allStud'],
-            'allProf'=>$result['allProf'], 'allNote'=>$result['allNote'], 'erreurs'=>$erreurs]);
+            'allProf'=>$result['allProf'], 'allNote'=>$result['allNote'], 'livrables'=>$result['livrables'], 'erreurs'=>$erreurs]);
     }
 
     private function validatorNote(array $donnees)
