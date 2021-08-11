@@ -206,12 +206,15 @@ class ProjetController extends AbstractController
         if($user->getRoles() == ["ROLE_USER"]){
             if (array_search($user, $details['stud']) === false) {
                 $details['access'] = false;
-
             }
         }
 
+
         //On cherche tous les tuteurs liés au projet
         $details['isTuteur'] = empty($this->getDoctrine()->getRepository(Note::class)->findNoteByTuteur($idProjet,$idUser));
+        if($user->getRoles()== ["ROLE_ADMIN","ROLE_USER"]){
+            $details['isTuteur'] = false;
+        }
 
         //On cherche tous les professeurs liés au projet
         $details['prof'] = $this->getDoctrine()->getRepository(User::class)->findProfByProjet($idProjet);
@@ -221,7 +224,6 @@ class ProjetController extends AbstractController
          */
         //On cherche les notes mis par l'enseignant sur le projet
         $details['notePerso'] = $this->getDoctrine()->getRepository(Note::class)->findNoteByProjetAndUser($idProjet,$idUser);
-
         //On cherche la moyenne de toutes les notes
         $details['noteMoyenne'] = $this->getDoctrine()->getRepository(Note::class)->findNoteMoyenneByProjet($idProjet);
 
@@ -448,6 +450,25 @@ class ProjetController extends AbstractController
 
     private function validatorNote(array $donnees)
     {
-        return null;
+        $erreurs = null;
+
+        if(empty($donnees['soutenance'] ))
+            $erreurs['soutenance'] = 'Veuillez indiquer une note';
+
+        if(empty($donnees['rapport'] ))
+            $erreurs['rapport'] = 'Veuillez indiquer une note';
+
+        if(empty($donnees['technique'] ))
+            $erreurs['technique'] = 'Veuillez indiquer une note';
+
+        if(!is_numeric($donnees['soutenance']) or $donnees['soutenance']<0 or $donnees['soutenance']>20)
+            $erreurs['soutenance'] = 'Veuillez indiquer une note valide';
+
+        if(!is_numeric($donnees['rapport']) or $donnees['rapport']<0 or $donnees['rapport']>20)
+            $erreurs['rapport'] = 'Veuillez indiquer une note valide';
+
+        if(!is_numeric($donnees['technique']) or $donnees['technique']<0 or $donnees['technique']>20)
+            $erreurs['technique'] = 'Veuillez indiquer une note valide';
+        return $erreurs;
     }
 }

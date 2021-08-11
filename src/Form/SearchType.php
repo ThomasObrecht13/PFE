@@ -2,14 +2,10 @@
 namespace App\Form;
 
 use App\Data\SearchProjet;
-use App\Entity\Projet;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class SearchType extends AbstractType
 {
@@ -34,7 +30,7 @@ class SearchType extends AbstractType
                 'label' => false,
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'nom de l\'enseigant(e)'
+                    'placeholder' => 'nom de l\'enseignant(e)'
                 ]
             ])
             ->add('date',TextType::class,[

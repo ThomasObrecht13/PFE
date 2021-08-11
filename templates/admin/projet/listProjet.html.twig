@@ -21,9 +21,9 @@
 
                     <td>{{ projet.date|date('Y') }}</td>
                     <td>
-                        <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
+                        <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">détails</a>
                         <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
-                        <a href="{{ path('projet_list_depot', {idProjet: projet.id}) }}" class="btn btn-primary">depot</a>
+                        <a href="{{ path('projet_list_livrable', {idProjet: projet.id}) }}" class="btn btn-primary">livrables</a>
                         <form action="{{ path('delete_projet') }}" method="POST" style="display:inline">
                             <input type="hidden" name="token" value="{{ csrf_token('projet_delete') }}">
                             <input type="hidden" name="id" value="{{ projet.id }}">

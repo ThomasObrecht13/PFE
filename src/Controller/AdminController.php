@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Fichier;
+use App\Entity\Livrable;
 use App\Entity\Membre;
 use App\Entity\Note;
 use App\Entity\Projet;
@@ -246,14 +247,15 @@ class AdminController extends AbstractController
             FICHIER
 --------------------------------- */
     /**
-     * @Route("/admin/listFichier", name="admin_list_fichier")
+     * @Route("/admin/listLivrable", name="admin_list_livrable")
      * @param Request $request
      */
-    public function listFichier(Request $request)
+    public function listLivrable(Request $request)
     {
-        $fichiers = $this->getDoctrine()->getRepository(Fichier::class)->findAll();
-        return $this->render('admin/fichier/listFichier.html.twig',['fichiers'=>$fichiers]);
+        $livrables = $this->getDoctrine()->getRepository(Livrable::class)->findAll();
+        return $this->render('admin/livrable/listLivrable.html.twig',['livrables'=>$livrables]);
     }
+
     /**
      * @Route("/admin/projet/{idProjet}/deleteFichier", name="admin_delete_fichier", methods={"DELETE"})
      * @param Request $request

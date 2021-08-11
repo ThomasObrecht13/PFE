@@ -3,7 +3,7 @@
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link active" id="linkDetails" href="javascript:link('details')">Details</a>
+            <a class="nav-link active" id="linkDetails" href="javascript:link('details')">Détails</a>
         </li>
         <li class="nav-item">
             <a class="nav-link"  id="linkNote" href="javascript:link('note')">Notes</a>
@@ -25,11 +25,12 @@
 
     <div class="container-fluid">
         <div id="details">
-            <h1>Details projet</h1>
+            <h1>Détails projet</h1>
             <table class="table">
                 <thead>
                 <tr>
                     <th scope="col">Sujet</th>
+                    <th scope="col">Description</th>
                     <th scope="col">Date debut</th>
                     <th scope="col">Étudiant</th>
                     <th scope="col">Tuteur</th>
@@ -41,6 +42,8 @@
                 <body>
                    <tr>
                        <td>{{ projet.sujet }}</td>
+                       <td>{{ projet.description }}</td>
+
                        <td>{{ projet.date|date('d/m/Y') }}</td>
                        <td>
                            {% for etudiant in etudiants %}
@@ -76,7 +79,7 @@
         MODIFICATION DES NOTES PAR LE TUTEUR
         #}
         <div id="note">
-            {% if notePerso is defined and not isTuteur %}
+            {% if notePerso is defined  and not isTuteur and not is_granted('ROLE_ADMIN') %}
             <h1>Vos notes</h1>
             <form action="{{ path('edit_note') }}" method="POST" style="display:inline">
                 {# note est un tableau #}
@@ -116,16 +119,38 @@
                     <th scope="col">Soutenance</th>
                     <th scope="col">Rapport</th>
                     <th scope="col">Technique</th>
+                    {% if is_granted("ROLE_ADMIN") %}
+                        <th scope="col">option</th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <body>
                     {% for note in allNote %}
-                        <tr>
-                        <td>{{ note.User.email }}</td>
-                        <td>{{ note.soutenance }}</td>
-                        <td>{{ note.rapport }}</td>
-                        <td>{{ note.technique }}</td>
-                        </tr>
+                        {% if is_granted("ROLE_ADMIN") %}
+                            <form action="{{ path('edit_note') }}" method="POST" style="display:inline">
+                                <tr>
+                                    <td>{{ note.User.email }}</td>
+                                    <td><input type="text" class="form-control" name="soutenance" value="{{ note.soutenance }}"></td>
+                                    <td><input type="text" class="form-control" name="rapport" value="{{ note.rapport }}"></td>
+                                    <td><input type="text" class="form-control" name="technique" value="{{ note.technique }}"></td>
+
+                                    <input type="hidden" name="note" value="{{ note.id }}">
+                                    <input type="hidden" name="projet" value="{{ projet.id }}">
+
+                                   <td><button type="submit" class="btn btn-primary">Valider</button></td>
+                                </tr>
+
+
+                            </form>
+                        {% else %}
+                            <tr>
+                                <td>{{ note.User.email }}</td>
+                                <td>{{ note.soutenance }}</td>
+                                <td>{{ note.rapport }}</td>
+                                <td>{{ note.technique }}</td>
+                            </tr>
+                        {% endif %}
+
                     {% endfor %}
                 </body>
             </table>

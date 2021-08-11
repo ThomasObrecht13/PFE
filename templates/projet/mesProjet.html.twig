@@ -20,7 +20,7 @@
                     <td>{{ projet.date|date('d/m/Y') }}</td>
                     <td>
                         <a href="{{ path('edit_projet', {id: projet.id}) }}" class="btn btn-primary">modifier</a>
-                        <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details/gestion</a>
+                        <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">détails/gestion</a>
                         <a href="{{ path('projet_list_livrable', {idProjet: projet.id}) }}" class="btn btn-primary">livrable</a>
                     </td>
                 </tr>

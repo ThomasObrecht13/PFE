@@ -95,7 +95,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
-    {/*
+    {
         //On verifie si l'utilisateur isActive
         $userRepository = new UserRepository($this->registry);
         $user = $userRepository->findByUser($token->getUser()->getUsername())[0]['isActive'];
@@ -103,7 +103,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         if (is_null($user) || $user == 0) {
             return new RedirectResponse("/logout");
         }
-        */
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
         }

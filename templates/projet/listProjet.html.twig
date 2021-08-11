@@ -11,7 +11,7 @@
                     {{ form_row(form_search.sujet) }}
                     <h4>Étudiant(e)</h4>
                     {{ form_row(form_search.nomEtudiant) }}
-                    <h4>Enseigant(e)</h4>
+                    <h4>Enseignant(e)</h4>
                     {{ form_row(form_search.nomTuteur) }}
                     <h4>Année</h4>
                     {{ form_row(form_search.date) }}
@@ -54,7 +54,7 @@
                             <td>{{ projet.date|date('Y') }}</td>
                             <td>
                                 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
-                                    <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">details</a>
+                                    <a href="{{ path('details_projet', {id: projet.id}) }}" class="btn btn-primary">détails</a>
                                 {% endif %}
 
                                 {% if is_granted('ROLE_ADMIN') %}

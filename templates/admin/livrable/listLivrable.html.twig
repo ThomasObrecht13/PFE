@@ -28,17 +28,17 @@
                             <a href="{{ asset('uploads/brochures/' ~ livrable.brochureFilename) }}">{{ livrable.brochureFilename}}</a>
                         </td>
                         <td>
-                            <a href="{{ path('edit_livrable', {idProjet: idProjet, idLivrable: livrable.id}) }}" class="btn btn-primary">Déposer</a>
+                            <a href="{{ path('edit_livrable', {idProjet: livrable.projet.id , idLivrable: livrable.id}) }}" class="btn btn-primary">Déposer</a>
                             {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PROF') %}
 
-                            <form action="{{ path('delete_livrable',{idProjet: idProjet, idLivrable: livrable.id}) }}" method="POST" style="display:inline">
-                                <input type="hidden" name="token" value="{{ csrf_token('livrable_delete') }}">
-                                <input type="hidden" name="idLivrable" value="{{ livrable.id }}">
-                                <input type="hidden" name="idProjet" value="{{ idProjet }}">
+                                <form action="{{ path('delete_livrable',{idProjet: livrable.projet.id , idLivrable: livrable.id}) }}" method="POST" style="display:inline">
+                                    <input type="hidden" name="token" value="{{ csrf_token('livrable_delete') }}">
+                                    <input type="hidden" name="idLivrable" value="{{ livrable.id }}">
+                                    <input type="hidden" name="idProjet" value="{{ livrable.projet.id }}">
 
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="btn btn-warning">Supprimer</button>
-                            </form>
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="submit" class="btn btn-warning">Supprimer</button>
+                                </form>
                             {% endif %}
                         </td>
                     </tr>
@@ -49,8 +49,8 @@
             <div>Aucun Livrables</div>
         {% endif %}
         <br>
-        {% if is_granted('ROLE_PROF') or is_granted('ROLE_ADMIN') %}
+        {% if is_granted('ROLE_PROF') %}
             <button type="button" class="btn btn-outline-primary"><a href="{{ path('add_livrable',{idProjet: idProjet}) }}">Créer un nouveau livrable</a></button>
         {% endif %}
-        </div>
+    </div>
 {% endblock %}

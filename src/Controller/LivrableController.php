@@ -100,7 +100,7 @@ class LivrableController extends AbstractController
         //On crée le formulaire
         $form = $this->createForm(LivrableType::class, $livrable);
         $form->add('submit', SubmitType::class, [
-            'label' => 'Modifier',
+            'label' => 'Déposer',
             'attr' => ['class' => 'btn btn-default pull-right'],
         ]);
         $form->handleRequest($request);
